@@ -1,0 +1,219 @@
+{
+  "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+  "version": "eosio::abi/1.1",
+  "types": [],
+  "structs": [
+    {
+      "name": "claim",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
+        },
+        {
+          "name": "round_id",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
+      "name": "clrconfig",
+      "base": "",
+      "fields": []
+    },
+    {
+      "name": "clrleaderb",
+      "base": "",
+      "fields": [
+        {
+          "name": "scope",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
+      "name": "clrround",
+      "base": "",
+      "fields": [
+        {
+          "name": "round_id",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
+      "name": "config",
+      "base": "",
+      "fields": [
+        {
+          "name": "round_length_sec",
+          "type": "uint64"
+        },
+        {
+          "name": "max_rounds",
+          "type": "uint16"
+        },
+        {
+          "name": "start_time",
+          "type": "time_point_sec"
+        },
+        {
+          "name": "minimum_donation",
+          "type": "asset"
+        },
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "compound_decay_pct",
+          "type": "float64"
+        },
+        {
+          "name": "compound_step_sec",
+          "type": "uint64"
+        },
+        {
+          "name": "start_decay_after_sec",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
+      "name": "leaderboard",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
+        },
+        {
+          "name": "score",
+          "type": "uint64"
+        },
+        {
+          "name": "donated",
+          "type": "asset"
+        },
+        {
+          "name": "times",
+          "type": "uint64"
+        },
+        {
+          "name": "last_donation",
+          "type": "time_point_sec"
+        }
+      ]
+    },
+    {
+      "name": "rounds",
+      "base": "",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint64"
+        },
+        {
+          "name": "total_donated",
+          "type": "asset"
+        },
+        {
+          "name": "total_score",
+          "type": "uint64"
+        },
+        {
+          "name": "donators",
+          "type": "uint64"
+        },
+        {
+          "name": "start",
+          "type": "time_point_sec"
+        }
+      ]
+    },
+    {
+      "name": "setconfig",
+      "base": "",
+      "fields": [
+        {
+          "name": "cfg",
+          "type": "config"
+        }
+      ]
+    },
+    {
+      "name": "simdonation",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
+        },
+        {
+          "name": "donation",
+          "type": "asset"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "name": "claim",
+      "type": "claim",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "clrconfig",
+      "type": "clrconfig",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "clrleaderb",
+      "type": "clrleaderb",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "clrround",
+      "type": "clrround",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "setconfig",
+      "type": "setconfig",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "simdonation",
+      "type": "simdonation",
+      "ricardian_contract": ""
+    }
+  ],
+  "tables": [
+    {
+      "name": "config",
+      "type": "config",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    },
+    {
+      "name": "leaderboard",
+      "type": "leaderboard",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    },
+    {
+      "name": "rounds",
+      "type": "rounds",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    }
+  ],
+  "ricardian_clauses": [],
+  "variants": [],
+  "error_messages": [],
+  "abi_extensions": []
+}
