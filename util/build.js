@@ -15,10 +15,16 @@ async function runCommand(exec, params) {
   console.log('[spawn] childProcess.pid: ', childProcess.pid)
 
   childProcess.stdout.on('data', function (data) {
-    // console.log('stdout: ', data.toString())
+    console.log('stdout: ', data.toString())
   })
   childProcess.stderr.on('data', function (data) {
-    console.log('stderr: ', data.toString())
+    e_str = data.toString(); 
+    if(e_str.includes('warning: abigen warning (Action <')){
+      
+    }
+    else{
+      console.log('stderr: ', e_str )
+    }
   })
 
   return promise

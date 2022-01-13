@@ -90,6 +90,18 @@ CONTRACT donations: public contract {
   ACTION clraccounts();
 #endif
 
+[[eosio::on_notify("atomicassets::transfer")]] 
+void on_nft_transfer(
+    name from,
+    name to,
+    vector <uint64_t> asset_ids,
+    string memo
+);
+
+ void add_nfts(name& account, map<uint32_t,int> nft_deltas,  donations::accounts_table& idx);
+ void sub_nfts(name& account, map<uint32_t,int> nft_deltas, donations::accounts_table& idx);
+ void validate_nft_set(map<uint32_t,int> nft_deltas);
+
   //there need to be an account table to hold extra data
   //ie to record NFT transfers
 
