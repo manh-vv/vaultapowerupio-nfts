@@ -11,9 +11,6 @@ void donations::on_nft_transfer(name from, name to, vector <uint64_t> asset_ids,
     //must moved in a separate fn
     
     map<uint32_t,int> template_counts;
-    // template_counts[TEMPLATE_ID_GOLD] = 0;
-    // template_counts[TEMPLATE_ID_SILVER] = 0;
-    // template_counts[TEMPLATE_ID_BRONZE] = 0;
 
     //loop through all asset_ids and determine what template_id they have and update it's counter;
     atomicassets::assets_t receiver_assets = atomicassets::get_assets(to);
@@ -45,7 +42,7 @@ void donations::on_nft_transfer(name from, name to, vector <uint64_t> asset_ids,
         //mint new NFT
         //sub_nfts from self
         uint32_t set_type =  get_set_template_id(template_counts);
-        
+
         //burn(asset_ids)
 
         if(set_type == TEMPLATE_ID_BRONZE){
