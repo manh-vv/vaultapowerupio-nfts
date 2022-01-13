@@ -100,7 +100,7 @@ void on_nft_transfer(
 
  void add_nfts(name& account, map<uint32_t,int> nft_deltas,  donations::accounts_table& idx);
  void sub_nfts(name& account, map<uint32_t,int> nft_deltas, donations::accounts_table& idx);
- void validate_nft_set(map<uint32_t,int> nft_deltas);
+ uint32_t get_set_template_id(map<uint32_t,int> nft_deltas);
 
   //there need to be an account table to hold extra data
   //ie to record NFT transfers

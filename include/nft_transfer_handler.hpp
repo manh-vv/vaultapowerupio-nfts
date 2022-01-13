@@ -44,7 +44,16 @@ void donations::on_nft_transfer(name from, name to, vector <uint64_t> asset_ids,
         //validate set  (ie minimum amount of 10 silver)
         //mint new NFT
         //sub_nfts from self
-        validate_nft_set(template_counts);
+        uint32_t set_type =  get_set_template_id(template_counts);
+        
+        //burn(asset_ids)
+
+        if(set_type == TEMPLATE_ID_BRONZE){
+            //mint silver
+        }
+        if(set_type == TEMPLATE_ID_SILVER){
+            //mint gold
+        }
     }
     else{
         //nft transfered to new owner
@@ -108,7 +117,7 @@ void donations::sub_nfts(name& account, map<uint32_t,int> nft_deltas,  donations
     
 }
 
-void donations::validate_nft_set(map<uint32_t,int> nft_deltas){
+uint32_t donations::get_set_template_id(map<uint32_t,int> nft_deltas){
         check(nft_deltas.size() == 1, "all nfts must be of the same type");
         uint32_t template_id = nft_deltas.begin()->first; // key
         int quantity = nft_deltas.begin()->second;
@@ -122,6 +131,9 @@ void donations::validate_nft_set(map<uint32_t,int> nft_deltas){
         if(template_id == TEMPLATE_ID_GOLD){
             check(false, "Golden NFTs can't be burned at this time" );
         }
+
+        //this will only return if the set is valid
+        return template_id;
 
 
 }
