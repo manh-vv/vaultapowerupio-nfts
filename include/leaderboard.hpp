@@ -25,10 +25,10 @@ struct Leaderboard {
     const auto& mint_price = lbconf.mint_price_min;
     const auto& max_mint = lbconf.max_mint_per_round;
     auto by_score = _leaderboard.get_index<"byscore"_n>();
+    donations::accounts_table _accounts(_self, _self.value);
     int allocated = 0;
     uint8_t rank = 1;
     auto price = mint_price;
-    donations::accounts_table _accounts(_self, _self.value);
     vector<rewards_data> rewards;
     for(auto ldbrd_itr = by_score.begin();
         ldbrd_itr != by_score.end() && allocated != lbconf.max_mint_per_round;
@@ -60,13 +60,14 @@ struct Leaderboard {
           row.bronze_unclaimed = u8add(to_mint, row.bronze_unclaimed);
         });
       }
-      rewards.emplace_back(rewards_data {
+      const auto rwd_dta = rewards_data {
         .bronze_nfts_awarded = to_mint,
         .donated = row.donated,
         .donator = row.donator,
         .rank = rank,
         .score = row.score,
-      });
+      };
+      rewards.push_back(rwd_dta);
     };
     return rewards;
   };

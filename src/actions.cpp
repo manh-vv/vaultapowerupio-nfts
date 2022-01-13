@@ -40,7 +40,7 @@ ACTION donations::rewardround(uint64_t& round_id) {
   check(round_id != lb.round_id, "can't reward current round, wait until next round starts");
   rounds_table _rounds(get_self(), get_self().value);
   auto r_itr = _rounds.require_find(round_id, "round doesn't exist");
-  check(!r_itr->rewarded, "rewards already generated for this round");
+  // check(!r_itr->rewarded, "rewards already generated for this round"); // temp for debugging
   const auto reward_data = lb.generate_round_rewards(round_id, *r_itr);
   action({get_self(), "active"_n}, get_self(), name("rewardlog"), make_tuple(*r_itr, reward_data)).send();
   _rounds.modify(r_itr, get_self(), [&](rounds& row) {
@@ -48,6 +48,6 @@ ACTION donations::rewardround(uint64_t& round_id) {
   });
 };
 
-ACTION donations::rewardlog(rounds& round_data, rewards_data& rewards_data) {
+ACTION donations::rewardlog(rounds& round_data, vector<rewards_data>& rewards_data) {
   require_auth(get_self());
 }

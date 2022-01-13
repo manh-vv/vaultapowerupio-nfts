@@ -81,7 +81,7 @@ CONTRACT donations: public contract {
   ACTION claim(name & donator, uint64_t & round_id);
   ACTION clrround(uint64_t & round_id);
   ACTION rewardround(uint64_t & round_id);
-  ACTION rewardlog(rounds & round_data, rewards_data & rewards_data);
+  ACTION rewardlog(rounds & round_data, vector<rewards_data> & rewards_data);
   // ACTION∏∏
 #if defined(DEBUG)
   ACTION simdonation(name donator, asset donation);
