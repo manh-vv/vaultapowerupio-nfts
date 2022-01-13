@@ -116,8 +116,8 @@ void donations::sub_nfts(name& account, map<uint32_t,int> nft_deltas,  donations
 
 uint32_t donations::get_set_template_id(map<uint32_t,int> nft_deltas){
         check(nft_deltas.size() == 1, "all nfts must be of the same type");
-        uint32_t template_id = nft_deltas.begin()->first; // key
-        int quantity = nft_deltas.begin()->second;
+        uint32_t template_id = nft_deltas.begin()->first; // key=template_id
+        int quantity = nft_deltas.begin()->second; //how many nfts
 
         if(template_id == TEMPLATE_ID_BRONZE){
             check(quantity == 20, "You need to transfer exactly 20 bronze nfts to mint a silver one" );
