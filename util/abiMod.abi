@@ -4,6 +4,32 @@
   "types": [],
   "structs": [
     {
+      "name": "accounts",
+      "base": "",
+      "fields": [
+        {
+          "name": "account",
+          "type": "name"
+        },
+        {
+          "name": "bronze_unclaimed",
+          "type": "uint8"
+        },
+        {
+          "name": "bronze_claimed",
+          "type": "uint16"
+        },
+        {
+          "name": "silver_claimed",
+          "type": "uint8"
+        },
+        {
+          "name": "gold_claimed",
+          "type": "uint8"
+        }
+      ]
+    },
+    {
       "name": "claim",
       "base": "",
       "fields": [
@@ -16,6 +42,11 @@
           "type": "uint64"
         }
       ]
+    },
+    {
+      "name": "clraccounts",
+      "base": "",
+      "fields": []
     },
     {
       "name": "clrconfig",
@@ -43,16 +74,17 @@
       ]
     },
     {
+      "name": "clrrounds",
+      "base": "",
+      "fields": []
+    },
+    {
       "name": "config",
       "base": "",
       "fields": [
         {
           "name": "round_length_sec",
           "type": "uint64"
-        },
-        {
-          "name": "max_rounds",
-          "type": "uint16"
         },
         {
           "name": "start_time",
@@ -68,15 +100,35 @@
         },
         {
           "name": "compound_decay_pct",
-          "type": "float64"
+          "type": "float32"
         },
         {
           "name": "compound_step_sec",
-          "type": "uint64"
+          "type": "uint32"
         },
         {
           "name": "start_decay_after_sec",
-          "type": "uint64"
+          "type": "uint32"
+        },
+        {
+          "name": "mint_price_min",
+          "type": "asset"
+        },
+        {
+          "name": "mint_price_increase_by_rank",
+          "type": "asset"
+        },
+        {
+          "name": "max_mint_per_round",
+          "type": "uint8"
+        },
+        {
+          "name": "bronze_to_silver",
+          "type": "uint8"
+        },
+        {
+          "name": "silver_to_gold",
+          "type": "uint8"
         }
       ]
     },
@@ -107,6 +159,56 @@
       ]
     },
     {
+      "name": "rewardlog",
+      "base": "",
+      "fields": [
+        {
+          "name": "round_data",
+          "type": "rounds"
+        },
+        {
+          "name": "rewards_data",
+          "type": "rewards_data"
+        }
+      ]
+    },
+    {
+      "name": "rewardround",
+      "base": "",
+      "fields": [
+        {
+          "name": "round_id",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
+      "name": "rewards_data",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
+        },
+        {
+          "name": "donated",
+          "type": "asset"
+        },
+        {
+          "name": "score",
+          "type": "uint64"
+        },
+        {
+          "name": "rank",
+          "type": "uint8"
+        },
+        {
+          "name": "bronze_nfts_awarded",
+          "type": "uint8"
+        }
+      ]
+    },
+    {
       "name": "rounds",
       "base": "",
       "fields": [
@@ -129,6 +231,10 @@
         {
           "name": "start",
           "type": "time_point_sec"
+        },
+        {
+          "name": "rewarded",
+          "type": "bool"
         }
       ]
     },
@@ -164,6 +270,11 @@
       "ricardian_contract": ""
     },
     {
+      "name": "clraccounts",
+      "type": "clraccounts",
+      "ricardian_contract": ""
+    },
+    {
       "name": "clrconfig",
       "type": "clrconfig",
       "ricardian_contract": ""
@@ -179,6 +290,21 @@
       "ricardian_contract": ""
     },
     {
+      "name": "clrrounds",
+      "type": "clrrounds",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "rewardlog",
+      "type": "rewardlog",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "rewardround",
+      "type": "rewardround",
+      "ricardian_contract": ""
+    },
+    {
       "name": "setconfig",
       "type": "setconfig",
       "ricardian_contract": ""
@@ -190,6 +316,13 @@
     }
   ],
   "tables": [
+    {
+      "name": "accounts",
+      "type": "accounts",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    },
     {
       "name": "config",
       "type": "config",

@@ -1,3 +1,8 @@
+#pragma once
+#include <algorithm>  // std::min
+using namespace std;
+#include "utils.hpp"
+using namespace eosio;
 
 struct Leaderboard {
   eosio::name _self;
@@ -12,6 +17,59 @@ struct Leaderboard {
     lbconf = _conf.get_or_create(_self, donations::config());
     round_id = get_round_id();
   }
+
+  vector<rewards_data> generate_round_rewards(uint64_t round_id, donations::rounds round_data) {
+    donations::leaderboard_table _leaderboard(_self, round_id);
+    auto const self = _self;
+    const auto& total = round_data.total_donated;
+    const auto& mint_price = lbconf.mint_price_min;
+    const auto& max_mint = lbconf.max_mint_per_round;
+    auto by_score = _leaderboard.get_index<"byscore"_n>();
+    int allocated = 0;
+    uint8_t rank = 1;
+    auto price = mint_price;
+    donations::accounts_table _accounts(_self, _self.value);
+    vector<rewards_data> rewards;
+    for(auto ldbrd_itr = by_score.begin();
+        ldbrd_itr != by_score.end() && allocated != lbconf.max_mint_per_round;
+        ldbrd_itr++, rank++  //
+    ) {
+      const auto row = *ldbrd_itr;
+      print("\nname: ", ldbrd_itr->donator, "\n");
+      print("donated: ", ldbrd_itr->donated.to_string(), "\n");
+      print("mint_price: ", price.to_string(), "\n");
+      if(ldbrd_itr->donated < mint_price) continue;
+      uint8_t remaining = max_mint - allocated;
+      uint8_t mint_num = uint8_t(ldbrd_itr->donated.amount / price.amount);
+      price += lbconf.mint_price_increase_by_rank;
+      uint8_t to_mint = min(remaining, mint_num);
+      print("to_mint: ", to_string(to_mint), "\n");
+      // check(false, "stop");
+      if(to_mint == 0) continue;
+      allocated += to_mint;
+      auto accts_itr = _accounts.find(ldbrd_itr->donator.value);
+      // create account if this is the first time for this user to win
+      if(accts_itr == _accounts.end()) {
+        _accounts.emplace(_self, [&](donations::accounts& row) {
+          row.account = ldbrd_itr->donator;
+          row.bronze_unclaimed = to_mint;
+        });
+      } else {
+        // add to their unclaimed balance
+        _accounts.modify(accts_itr, _self, [&](donations::accounts& row) {
+          row.bronze_unclaimed = u8add(to_mint, row.bronze_unclaimed);
+        });
+      }
+      rewards.emplace_back(rewards_data {
+        .bronze_nfts_awarded = to_mint,
+        .donated = row.donated,
+        .donator = row.donator,
+        .rank = rank,
+        .score = row.score,
+      });
+    };
+    return rewards;
+  };
 
   void addScore(eosio::name& donator, eosio::asset& donation) {
     if(disable_leaderboard()) {
@@ -45,11 +103,6 @@ struct Leaderboard {
       int wait_seconds = lbconf.start_time.sec_since_epoch() - now.sec_since_epoch();
       //eosio::check(false, "Leaderboard not active. wait "+to_string(wait_seconds)+" seconds");
       eosio::print("Leaderboard not active. wait " + to_string(wait_seconds) + " seconds");
-      return true;
-    }
-    if(round_id > lbconf.max_rounds) {
-      // eosio::check(false, "Max number of rounds ("+to_string(lbconf.max_rounds)+") exceeded. Current round is "+ to_string(round_id) );
-      eosio::print("Max number of rounds (" + to_string(lbconf.max_rounds) + ") exceeded. Current round is " + to_string(round_id));
       return true;
     }
     return false;
@@ -90,12 +143,13 @@ struct Leaderboard {
     if(lbconf.minimum_donation > donation) {
       eosio::print("Not eligible for leaderboard. First donation must be minimum " + donation.to_string());
     } else {
-      idx.emplace(_self, [&](auto& n) {
+      idx.emplace(_self, [&](donations::rounds& n) {
         n.id = round_id;
         n.total_donated = donation;
         n.total_score = score;
         n.donators = 1;
         n.start = get_round_start_time();
+        n.rewarded = false;
       });
     }
   }
@@ -113,7 +167,7 @@ struct Leaderboard {
     if(lbconf.minimum_donation > donation) {
       eosio::print("Not eligible for leaderboard. First donation must be minimum " + donation.to_string());
     } else {
-      idx.emplace(_self, [&](auto& n) {
+      idx.emplace(_self, [&](donations::leaderboard& n) {
         n.donator = donator;
         n.times = 1;
         n.score = score;

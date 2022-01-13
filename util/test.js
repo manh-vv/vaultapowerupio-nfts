@@ -8,8 +8,12 @@ const methods = {
   async getRound() {
     const configTbl = await api.rpc.get_table_rows({ code: contractAccount, scope: contractAccount, table: "config" }).catch(err => console.error(err))
     const conf = configTbl.rows[0]
-    const startTime = Date.parse(conf.start_time) / 1000
-    const elapsed = Date.now() / 1000 - startTime
+    const startTime = Date.parse(conf.start_time.split(".")[0] + ".000+00:00") / 1000
+    console.log('startTime', startTime);
+    const now = (Date.now() / 1000)
+    console.log('now', now);
+    const elapsed = now - startTime
+    console.log('elapsed:', elapsed);
     const round = Math.floor(elapsed / conf.round_length_sec) + 1
     console.log("current Round: ", round);
   },

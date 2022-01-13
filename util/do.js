@@ -1,36 +1,11 @@
 const conf = require('./eosioConfig')
 const env = require('../.env.js')
-const { api, tapos } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
+const utils = require('@deltalabs/eos-utils')
+const { api, tapos, doAction } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
+// api.de
+// api.deserialize(, 'name')
 const contractAccount = conf.accountName[env.defaultChain]
 var watchAccountSample = require('./lib/sample_watchaccount')
-function chainName() {
-  if (env.defaultChain == 'jungle') return 'jungle3'
-  if (env.defaultChain == 'telosTest') return 'telos-test'
-  else return env.defaultChain
-}
-
-async function doAction(name, data, account, auth) {
-  try {
-    if (!data) data = {}
-    if (!account) account = contractAccount
-    if (!auth) auth = account
-    console.log("Do Action:", name, data)
-    const authorization = [{ actor: auth, permission: 'active' }]
-    const result = await api.transact({
-      // "delay_sec": 0,
-      actions: [{ account, name, data, authorization }]
-    }, tapos)
-    const txid = result.transaction_id
-    console.log(result)
-    console.log(`https://${chainName()}.bloks.io/transaction/` + txid)
-    // console.log(`https://jungle.eosq.eosnation.io/tx/${txid}`);
-    // console.log(txid)r
-    return result
-  } catch (error) {
-    console.error(error.toString())
-    if (error.json) console.error("Logs:", error.json?.error?.details[1]?.message)
-  }
-}
 
 const methods = {
 
@@ -41,19 +16,32 @@ const methods = {
     await doAction('simdonation', { donator, donation })
   },
   async clrleaderb(scope) {
-    scope = contractAccount;
-    await doAction('clrleaderb')
+
+    await doAction('clrleaderb', { scope })
+  },
+  async clearLeaderboards() {
+    const scopes = (await api.rpc.get_table_by_scope({ code: contractAccount, table: "leaderboard" })).rows.map(el => el.scope)
+    console.log('leaderboards:', scopes.length);
+    for (let scope of scopes) {
+      scope = utils.convertName2Value(scope).toInt()
+      console.log(scope);
+      await doAction('clrleaderb', { scope })
+    }
   },
   async setconfig(cfg) {
     cfg = {
-      round_length_sec: 60 * 5,
+      round_length_sec: 60 * 2,
       minimum_donation: "1.0000 EOS",
       enabled: 1,
       compound_decay_pct: 0.05,
       start_decay_after_sec: 60,
       compound_step_sec: 60,
-      start_time: "2022-01-13T18:00:00",
-      max_rounds: 5
+      start_time: "2022-01-12T00:00:00",
+      mint_price_min: "1.0000 EOS",
+      mint_price_increase_by_rank: "0.1000 EOS",
+      max_mint_per_round: 7,
+      bronze_to_silver: 20,
+      silver_to_gold: 10
     }
     await doAction('setconfig', { cfg })
   },
@@ -69,6 +57,12 @@ const methods = {
   async clrrounds() {
     await doAction('clrrounds')
   },
+  async rewardround(round_id) {
+    await doAction('rewardround', { round_id })
+  },
+  async clraccounts() {
+    await doAction('clraccounts')
+  }
 }
 
 
