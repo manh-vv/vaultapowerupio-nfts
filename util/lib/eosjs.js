@@ -45,7 +45,7 @@ async function doAction(name, data, account, auth) {
     if (!account) account = contractAccount
     if (!auth) auth = account
     console.log("Do Action:", name, data)
-    const authorization = [{ actor: auth, permission: 'owner' }]
+    const authorization = [{ actor: auth, permission: 'active' }]
     const result = await api.transact({
       // "delay_sec": 0,
       actions: [{ account, name, data, authorization }]
@@ -67,6 +67,7 @@ function init(keys, apiurl) {
   const fetch = require('node-fetch')
 
   if (!apiurl) apiurl = conf.endpoints[activeChain][0]
+  console.log(apiurl);
   rpc = new JsonRpc(apiurl, { fetch })
   api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
 

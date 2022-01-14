@@ -10,15 +10,15 @@ void cleanTable(name code, uint64_t account, const uint32_t batchSize) {
   }
 }
 
+ACTION donations::clrleaderb(uint64_t scope) {
+  require_auth(get_self());
+  cleanTable<donations::leaderboard_table>(get_self(), scope, 100);
+};
+
 ACTION donations::simdonation(name donator, asset donation) {
   require_auth(get_self());
   Leaderboard lb(get_self());
   lb.addScore(donator, donation);
-}
-
-ACTION donations::clrleaderb(uint64_t scope) {
-  require_auth(get_self());
-  cleanTable<donations::leaderboard_table>(get_self(), scope, 100);
 };
 
 ACTION donations::clrrounds() {

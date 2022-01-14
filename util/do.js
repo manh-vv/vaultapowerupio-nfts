@@ -2,9 +2,8 @@ const conf = require('./eosioConfig')
 const env = require('../.env.js')
 const utils = require('@deltalabs/eos-utils')
 const { api, tapos, doAction } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
-// api.de
-// api.deserialize(, 'name')
-const contractAccount = conf.accountName[env.defaultChain]
+const activeChain = process.env.CHAIN || env.defaultChain
+const contractAccount = conf.accountName[activeChain]
 var watchAccountSample = require('./lib/sample_watchaccount')
 
 const methods = {
