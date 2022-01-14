@@ -23,8 +23,8 @@ struct Leaderboard {
     donations::leaderboard_table _leaderboard(_self, round_id);
     auto const self = _self;
     const auto& total = round_data.total_donated;
-    const auto& mint_price = lbconf.mint_price_min;
-    const auto& max_mint = lbconf.max_mint_per_round;
+    const auto& mint_price = lbconf.nft.mint_price_min;
+    const auto& max_mint = lbconf.nft.max_bronze_mint_per_round;
     auto by_score = _leaderboard.get_index<"byscore"_n>();
     donations::accounts_table _accounts(_self, _self.value);
     int allocated = 0;
@@ -32,27 +32,26 @@ struct Leaderboard {
     auto price = mint_price;
     vector<rewards_data> rewards;
     for(auto ldbrd_itr = by_score.begin();
-        ldbrd_itr != by_score.end() && allocated != lbconf.max_mint_per_round;
+        ldbrd_itr != by_score.end() && allocated != lbconf.nft.max_bronze_mint_per_round;
         ldbrd_itr++, rank++  //
     ) {
-      const auto row = *ldbrd_itr;
-      print("\nname: ", ldbrd_itr->donator, "\n");
-      print("donated: ", ldbrd_itr->donated.to_string(), "\n");
+      const auto userrank = *ldbrd_itr;
+      print("\nname: ", userrank.donator, "\n");
+      print("donated: ", userrank.donated.to_string(), "\n");
       print("mint_price: ", price.to_string(), "\n");
-      if(ldbrd_itr->donated < mint_price) continue;
+      if(userrank.donated < mint_price) continue;
       uint8_t remaining = max_mint - allocated;
-      uint8_t mint_num = uint8_t(ldbrd_itr->donated.amount / price.amount);
-      price += lbconf.mint_price_increase_by_rank;
+      uint8_t mint_num = uint8_t(userrank.donated.amount / price.amount);
+      price += lbconf.nft.mint_price_increase_by_rank;
       uint8_t to_mint = min(remaining, mint_num);
       print("to_mint: ", to_string(to_mint), "\n");
-      // check(false, "stop");
       if(to_mint == 0) continue;
       allocated += to_mint;
-      auto accts_itr = _accounts.find(ldbrd_itr->donator.value);
+      auto accts_itr = _accounts.find(userrank.donator.value);
       // create account if this is the first time for this user to win
       if(accts_itr == _accounts.end()) {
         _accounts.emplace(_self, [&](donations::accounts& row) {
-          row.account = ldbrd_itr->donator;
+          row.account = userrank.donator;
           row.bronze_unclaimed = to_mint;
         });
       } else {
@@ -63,10 +62,11 @@ struct Leaderboard {
       }
       const auto rwd_dta = rewards_data {
         .bronze_nfts_awarded = to_mint,
-        .donated = row.donated,
-        .donator = row.donator,
+        .donated = userrank.donated,
+        .donator = userrank.donator,
         .rank = rank,
-        .score = row.score};
+        .score = userrank.score,
+      };
       rewards.push_back(rwd_dta);
     };
     return rewards;

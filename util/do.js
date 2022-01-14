@@ -36,11 +36,18 @@ const methods = {
       start_decay_after_sec: 60,
       compound_step_sec: 60,
       start_time: "2022-01-12T00:00:00",
-      mint_price_min: "1.0000 EOS",
-      mint_price_increase_by_rank: "0.1000 EOS",
-      max_mint_per_round: 7,
-      bronze_to_silver: 20,
-      silver_to_gold: 10
+      nft: {
+        mint_price_min: "1.0000 EOS",
+        mint_price_increase_by_rank: "0.1000 EOS",
+        max_bronze_mint_per_round: 10,
+        bronze_to_silver: 5,
+        silver_to_gold: 3,
+        collection_name: 'eospwrupnfts',
+        schema_name: 'elemental',
+        bronze_template_id: 4,
+        silver_template_id: 7,
+        gold_template_id: 6
+      }
     }
     await doAction('setconfig', { cfg })
   },
@@ -61,6 +68,9 @@ const methods = {
   },
   async clraccounts() {
     await doAction('clraccounts')
+  },
+  async claim(donator) {
+    await doAction('claim', { donator })
   }
 }
 

@@ -47,25 +47,19 @@ const methods = {
     await doAction('createschema', {
       authorized_creator: defaultParams.code,
       collection_name: 'eospwrupnfts',
-      schema_name: 'genesis',
-      schema_format: [
-        { name: 'name', type: 'string' },
-        { name: 'img', type: 'image' },
-        { name: 'rarity', type: 'string' },
-        { name: 'details', type: 'string' },
-        { name: 'url', type: 'string' }
-      ]
+      schema_name: 'elemental',
+      schema_format: meta.genesis.schema
     }, 'atomicassets', defaultParams.code)
   },
   async createTemplate() {
     await doAction('createtempl', {
       authorized_creator: defaultParams.code,
       collection_name: 'eospwrupnfts',
-      schema_name: "genesis",
+      schema_name: "elemental",
       transferable: true,
       burnable: true,
       max_supply: 0,
-      immutable_data: meta.genesis.gold
+      immutable_data: meta.genesis.silver
     }, 'atomicassets', defaultParams.code)
   },
   async mint() {

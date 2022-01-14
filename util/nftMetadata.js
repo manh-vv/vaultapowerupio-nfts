@@ -1,5 +1,12 @@
 const nftMetadata = {
   genesis: {
+    schema: [
+      { name: 'name', type: 'string' },
+      { name: 'img', type: 'image' },
+      { name: 'rarity', type: 'string' },
+      { name: 'details', type: 'string' },
+      { name: 'url', type: 'string' }
+    ],
     bronze: [
       { key: "name", value: ["string", "EOS PowerUp Genesis Bronze Utility NFT"] },
       { key: "img", value: ["string", ""] },

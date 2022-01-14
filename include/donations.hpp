@@ -21,23 +21,39 @@ CONTRACT donations: public contract {
 
  public:
   eosio::time_point_sec NOW = eosio::time_point_sec(eosio::current_time_point());
+  const permission_level active_auth = permission_level {get_self(), "active"_n};
+  struct nft_config {
+    asset mint_price_min;
+    asset mint_price_increase_by_rank;
+    uint8_t max_bronze_mint_per_round;  // max number of bronze NFTs to mint per round
+    uint8_t bronze_to_silver;           // after this many bronze NFTs are claimed by an account a silver can be claimed
+    uint8_t silver_to_gold;             // after this many silver NFTs are claimed by an account a gold can be claimed
+    name collection_name;               // atomicassets collection
+    name schema_name;                   //schema to use for minting rewards
+    uint32_t bronze_template_id;
+    uint32_t silver_template_id;
+    uint32_t gold_template_id;
+  };
 
   //table defenitions
   TABLE config {
     uint64_t round_length_sec = 7 * 24 * 60 * 60;
     eosio::time_point_sec start_time;
-    //the minimum first donation to be included in the leaderboard. this to prevent RAM attacks.
+    // the minimum first donation to be included in the leaderboard. this to prevent RAM attacks.
     eosio::asset minimum_donation = eosio::asset(1000, eosio::symbol(eosio::symbol_code("EOS"), 4));
     bool enabled = 0;  //disable leaderboard but still keep donations enabled
 
     float compound_decay_pct = 0.03;
     uint32_t compound_step_sec = DAY_SEC;
     uint32_t start_decay_after_sec = 0;
-    asset mint_price_min = eosio::asset(10000, eosio::symbol(eosio::symbol_code("EOS"), 4));
-    asset mint_price_increase_by_rank = eosio::asset(5000, eosio::symbol(eosio::symbol_code("EOS"), 4));
-    uint8_t max_mint_per_round = 7;
-    uint8_t bronze_to_silver = 20;  // after this many bronze NFTs are claimed by an account a silver can be claimed
-    uint8_t silver_to_gold = 10;    // after this many silver NFTs are claimed by an account a gold can be claimed
+
+    nft_config nft = nft_config {
+      .mint_price_min = asset(10000, eosio::symbol(eosio::symbol_code("EOS"), 4)),
+      .mint_price_increase_by_rank = asset(5000, eosio::symbol(eosio::symbol_code("EOS"), 4)),
+      .max_bronze_mint_per_round = 10,
+      .bronze_to_silver = 20,
+      .silver_to_gold = 30,
+    };
   };
   typedef eosio::singleton<"config"_n, config> config_table;
 
@@ -78,13 +94,15 @@ CONTRACT donations: public contract {
   //actions
   ACTION setconfig(const config& cfg);
   ACTION clrconfig();
-  ACTION claim(name & donator, uint64_t & round_id);
   ACTION clrround(uint64_t & round_id);
   ACTION rewardround(uint64_t & round_id);
   ACTION rewardlog(rounds & round_data, vector<rewards_data> & rewards_data);
+  ACTION rmaccount(name & donator);
+  ACTION claim(name & donator);
   // ACTION∏∏
 #if defined(DEBUG)
-  ACTION simdonation(name donator, asset donation);
+  ACTION
+  simdonation(name donator, asset donation);
   ACTION clrleaderb(uint64_t scope);
   ACTION clrrounds();
   ACTION clraccounts();

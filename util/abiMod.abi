@@ -36,10 +36,6 @@
         {
           "name": "donator",
           "type": "name"
-        },
-        {
-          "name": "round_id",
-          "type": "uint64"
         }
       ]
     },
@@ -111,24 +107,8 @@
           "type": "uint32"
         },
         {
-          "name": "mint_price_min",
-          "type": "asset"
-        },
-        {
-          "name": "mint_price_increase_by_rank",
-          "type": "asset"
-        },
-        {
-          "name": "max_mint_per_round",
-          "type": "uint8"
-        },
-        {
-          "name": "bronze_to_silver",
-          "type": "uint8"
-        },
-        {
-          "name": "silver_to_gold",
-          "type": "uint8"
+          "name": "nft",
+          "type": "nft_config"
         }
       ]
     },
@@ -155,6 +135,52 @@
         {
           "name": "last_donation",
           "type": "time_point_sec"
+        }
+      ]
+    },
+    {
+      "name": "nft_config",
+      "base": "",
+      "fields": [
+        {
+          "name": "mint_price_min",
+          "type": "asset"
+        },
+        {
+          "name": "mint_price_increase_by_rank",
+          "type": "asset"
+        },
+        {
+          "name": "max_bronze_mint_per_round",
+          "type": "uint8"
+        },
+        {
+          "name": "bronze_to_silver",
+          "type": "uint8"
+        },
+        {
+          "name": "silver_to_gold",
+          "type": "uint8"
+        },
+        {
+          "name": "collection_name",
+          "type": "name"
+        },
+        {
+          "name": "schema_name",
+          "type": "name"
+        },
+        {
+          "name": "bronze_template_id",
+          "type": "uint32"
+        },
+        {
+          "name": "silver_template_id",
+          "type": "uint32"
+        },
+        {
+          "name": "gold_template_id",
+          "type": "uint32"
         }
       ]
     },
@@ -205,6 +231,16 @@
         {
           "name": "bronze_nfts_awarded",
           "type": "uint8"
+        }
+      ]
+    },
+    {
+      "name": "rmaccount",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
         }
       ]
     },
@@ -302,6 +338,11 @@
     {
       "name": "rewardround",
       "type": "rewardround",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "rmaccount",
+      "type": "rmaccount",
       "ricardian_contract": ""
     },
     {

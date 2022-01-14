@@ -1,3 +1,4 @@
+#include <atomicdata.hpp>
 #include <donations.hpp>
 #include <leaderboard.hpp>
 
@@ -33,8 +34,6 @@ ACTION donations::clrround(uint64_t& round_id) {
   _rounds.erase(r_itr);
 };
 
-ACTION donations::claim(name& donator, uint64_t& round_id) {};
-
 ACTION donations::rewardround(uint64_t& round_id) {
   Leaderboard lb(get_self());
   check(round_id != lb.round_id, "can't reward current round, wait until next round starts");
@@ -42,7 +41,7 @@ ACTION donations::rewardround(uint64_t& round_id) {
   auto r_itr = _rounds.require_find(round_id, "round doesn't exist");
   // check(!r_itr->rewarded, "rewards already generated for this round"); // temp for debugging
   const auto reward_data = lb.generate_round_rewards(round_id, *r_itr);
-  action({get_self(), "active"_n}, get_self(), name("rewardlog"), make_tuple(*r_itr, reward_data)).send();
+  action(active_auth, get_self(), name("rewardlog"), make_tuple(*r_itr, reward_data)).send();
   _rounds.modify(r_itr, get_self(), [&](rounds& row) {
     row.rewarded = true;
   });
@@ -50,4 +49,59 @@ ACTION donations::rewardround(uint64_t& round_id) {
 
 ACTION donations::rewardlog(rounds& round_data, vector<rewards_data>& rewards_data) {
   require_auth(get_self());
-}
+};
+
+ACTION donations::rmaccount(name& donator) {
+  check(has_auth(get_self()) || has_auth(donator), "not authorized");
+  accounts_table _accounts(get_self(), get_self().value);
+  const auto donator_itr = _accounts.require_find(donator.value, "donator doesn't have an account");
+  _accounts.erase(donator_itr);
+};
+
+ACTION donations::claim(name& donator) {
+  // check(has_auth(get_self()) || has_auth(donator), "not authorized");
+  donations::accounts_table _accounts(_self, _self.value);
+  config_table _config(get_self(), get_self().value);
+  const auto config = _config.get();
+  const auto donator_itr = _accounts.require_find(donator.value, "donator doesn't have an account");
+  const auto blank_data = atomicdata::ATTRIBUTE_MAP {};
+  const vector<asset> tokens_to_back;
+  auto claimer = *donator_itr;
+  check(claimer.bronze_unclaimed > 0, "no nfts to claim");
+  const action mint_bronze = action(active_auth, name("atomicassets"), name("mintasset"), make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.bronze_template_id, get_self(), blank_data, blank_data, tokens_to_back));
+  auto bronze_minted = 0;
+  while(bronze_minted != claimer.bronze_unclaimed) {
+    mint_bronze.send();
+    bronze_minted++;
+  }
+  claimer.bronze_claimed += bronze_minted;
+  claimer.bronze_unclaimed = 0;
+
+  const auto total_mint_silver = claimer.bronze_claimed / config.nft.bronze_to_silver;
+  if(total_mint_silver > claimer.silver_claimed) {
+    auto mint_silver = total_mint_silver - claimer.silver_claimed;
+    const action mint_silver_action = action(active_auth, name("atomicassets"), name("mintasset"), make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.silver_template_id, get_self(), blank_data, blank_data, tokens_to_back));
+    auto silver_minted = 0;
+    while(silver_minted != mint_silver) {
+      mint_silver_action.send();
+      silver_minted++;
+    }
+    claimer.silver_claimed += silver_minted;
+  }
+
+  const auto total_mint_gold = claimer.silver_claimed / config.nft.silver_to_gold;
+  if(total_mint_gold > claimer.gold_claimed) {
+    auto mint_gold = total_mint_gold - claimer.gold_claimed;
+    const action mint_gold_action = action(active_auth, name("atomicassets"), name("mintasset"), make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.gold_template_id, get_self(), blank_data, blank_data, tokens_to_back));
+    auto gold_minted = 0;
+    while(gold_minted != mint_gold) {
+      mint_gold_action.send();
+      gold_minted++;
+    }
+    claimer.gold_claimed += gold_minted;
+  }
+
+  _accounts.modify(donator_itr, _self, [&](donations::accounts& row) {
+    row = claimer;
+  });
+};
