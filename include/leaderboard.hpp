@@ -3,6 +3,7 @@
 using namespace std;
 #include "utils.hpp"
 using namespace eosio;
+#include <donations.hpp>
 
 struct Leaderboard {
   eosio::name _self;
@@ -65,8 +66,7 @@ struct Leaderboard {
         .donated = row.donated,
         .donator = row.donator,
         .rank = rank,
-        .score = row.score,
-      };
+        .score = row.score};
       rewards.push_back(rwd_dta);
     };
     return rewards;
