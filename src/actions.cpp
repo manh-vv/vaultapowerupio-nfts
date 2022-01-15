@@ -68,7 +68,8 @@ ACTION donations::claim(name& donator) {
   const vector<asset> tokens_to_back;
   auto claimer = *donator_itr;
   check(claimer.bronze_unclaimed > 0, "no nfts to claim");
-  const action mint_bronze = action(active_auth, name("atomicassets"), name("mintasset"), make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.bronze_template_id, get_self(), blank_data, blank_data, tokens_to_back));
+  const auto bronze_data = make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.bronze_template_id, get_self(), blank_data, blank_data, tokens_to_back);
+  const action mint_bronze = action(active_auth, name("atomicassets"), name("mintasset"), bronze_data);
   auto bronze_minted = 0;
   while(bronze_minted != claimer.bronze_unclaimed) {
     mint_bronze.send();
@@ -80,7 +81,8 @@ ACTION donations::claim(name& donator) {
   const auto total_mint_silver = claimer.bronze_claimed / config.nft.bronze_to_silver;
   if(total_mint_silver > claimer.silver_claimed) {
     auto mint_silver = total_mint_silver - claimer.silver_claimed;
-    const action mint_silver_action = action(active_auth, name("atomicassets"), name("mintasset"), make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.silver_template_id, get_self(), blank_data, blank_data, tokens_to_back));
+    const auto silver_data = make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.silver_template_id, get_self(), blank_data, blank_data, tokens_to_back);
+    const action mint_silver_action = action(active_auth, name("atomicassets"), name("mintasset"), silver_data);
     auto silver_minted = 0;
     while(silver_minted != mint_silver) {
       mint_silver_action.send();
@@ -92,7 +94,8 @@ ACTION donations::claim(name& donator) {
   const auto total_mint_gold = claimer.silver_claimed / config.nft.silver_to_gold;
   if(total_mint_gold > claimer.gold_claimed) {
     auto mint_gold = total_mint_gold - claimer.gold_claimed;
-    const action mint_gold_action = action(active_auth, name("atomicassets"), name("mintasset"), make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.gold_template_id, get_self(), blank_data, blank_data, tokens_to_back));
+    const auto gold_data = make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.gold_template_id, get_self(), blank_data, blank_data, tokens_to_back);
+    const action mint_gold_action = action(active_auth, name("atomicassets"), name("mintasset"), gold_data);
     auto gold_minted = 0;
     while(gold_minted != mint_gold) {
       mint_gold_action.send();

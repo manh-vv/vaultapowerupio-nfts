@@ -46,7 +46,6 @@ CONTRACT donations: public contract {
     float compound_decay_pct = 0.03;
     uint32_t compound_step_sec = DAY_SEC;
     uint32_t start_decay_after_sec = 0;
-
     nft_config nft = nft_config {
       .mint_price_min = asset(10000, eosio::symbol(eosio::symbol_code("EOS"), 4)),
       .mint_price_increase_by_rank = asset(5000, eosio::symbol(eosio::symbol_code("EOS"), 4)),
