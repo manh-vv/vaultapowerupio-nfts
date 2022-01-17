@@ -45,18 +45,22 @@ const methods = {
   async jungle(type) {
     const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.jungle, conf.endpoints.jungle[0])
 
-    const authorization = [{ actor: conf.accountName.jungle, permission: 'active' }]
-    console.log(authorization);
+    const authorization = [{ actor: conf.accountName.telosTest, permission: 'owner' }]
+    // console.log(authorization);
     if (!type) type = 'debug'
-    await doAction('powerup', { payer: conf.accountName.jungle, receiver: conf.accountName.jungle, days: 1, net_frac: 1000000, cpu_frac: 100000, max_payment: "0.1000 EOS" }, 'eosio', conf.accountName.jungle)
-
-    console.log("Pushing ABI");
-    const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err.toString()))
-    if (result) console.log('https://jungle3.bloks.io/transaction/' + result.transaction_id)
-
-    console.log("Pushing WASM");
-    const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
-    if (result2) console.log('https://jungle3.bloks.io/transaction/' + result2.transaction_id)
+    const abiAction = new Promise(async (res) => {
+      console.log("Pushing ABI");
+      const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
+      if (result) console.log('ABI: https://telos-test.bloks.io/transaction/' + result.transaction_id)
+      res()
+    })
+    const wasmAction = new Promise(async (res) => {
+      console.log("Pushing WASM");
+      const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
+      if (result2) console.log('WASM: https://telos-test.bloks.io/transaction/' + result2.transaction_id)
+      res()
+    })
+    await Promise.all([abiAction, wasmAction])
 
   },
   async telos(type) {

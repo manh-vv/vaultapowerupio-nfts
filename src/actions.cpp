@@ -1,4 +1,4 @@
-#include <atomicdata.hpp>
+#include <atomicassets.hpp>
 #include <donations.hpp>
 #include <leaderboard.hpp>
 
@@ -53,58 +53,52 @@ ACTION donations::rewardlog(rounds& round_data, vector<rewards_data>& rewards_da
 
 ACTION donations::rmaccount(name& donator) {
   check(has_auth(get_self()) || has_auth(donator), "not authorized");
-  accounts_table _accounts(get_self(), get_self().value);
+  claimed_table _accounts(get_self(), get_self().value);
   const auto donator_itr = _accounts.require_find(donator.value, "donator doesn't have an account");
   _accounts.erase(donator_itr);
 };
 
 ACTION donations::claim(name& donator) {
   // check(has_auth(get_self()) || has_auth(donator), "not authorized");
-  donations::accounts_table _accounts(_self, _self.value);
+  donations::claimed_table _accounts(_self, _self.value);
   config_table _config(get_self(), get_self().value);
   const auto config = _config.get();
   const auto donator_itr = _accounts.require_find(donator.value, "donator doesn't have an account");
-  const auto blank_data = atomicdata::ATTRIBUTE_MAP {};
+  const auto blank_data = atomicassets::ATTRIBUTE_MAP {};
   const vector<asset> tokens_to_back;
   auto claimer = *donator_itr;
   check(claimer.bronze_unclaimed > 0, "no nfts to claim");
-  const auto bronze_data = make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.bronze_template_id, get_self(), blank_data, blank_data, tokens_to_back);
-  const action mint_bronze = action(active_auth, name("atomicassets"), name("mintasset"), bronze_data);
   auto bronze_minted = 0;
   while(bronze_minted != claimer.bronze_unclaimed) {
-    mint_bronze.send();
+    mint(claimer.account, config.nft.bronze_template_id, config.nft);
     bronze_minted++;
   }
   claimer.bronze_claimed += bronze_minted;
   claimer.bronze_unclaimed = 0;
 
-  const auto total_mint_silver = claimer.bronze_claimed / config.nft.bronze_to_silver;
+  const auto total_mint_silver = claimer.bronze_claimed / config.nft.bonus_silver_per_bronze_claimed;
   if(total_mint_silver > claimer.silver_claimed) {
     auto mint_silver = total_mint_silver - claimer.silver_claimed;
-    const auto silver_data = make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.silver_template_id, get_self(), blank_data, blank_data, tokens_to_back);
-    const action mint_silver_action = action(active_auth, name("atomicassets"), name("mintasset"), silver_data);
     auto silver_minted = 0;
     while(silver_minted != mint_silver) {
-      mint_silver_action.send();
+      mint(claimer.account, config.nft.silver_template_id, config.nft);
       silver_minted++;
     }
     claimer.silver_claimed += silver_minted;
   }
 
-  const auto total_mint_gold = claimer.silver_claimed / config.nft.silver_to_gold;
+  const auto total_mint_gold = claimer.silver_claimed / config.nft.bonus_gold_per_silver_claimed;
   if(total_mint_gold > claimer.gold_claimed) {
     auto mint_gold = total_mint_gold - claimer.gold_claimed;
-    const auto gold_data = make_tuple(get_self(), config.nft.collection_name, config.nft.schema_name, config.nft.gold_template_id, get_self(), blank_data, blank_data, tokens_to_back);
-    const action mint_gold_action = action(active_auth, name("atomicassets"), name("mintasset"), gold_data);
     auto gold_minted = 0;
     while(gold_minted != mint_gold) {
-      mint_gold_action.send();
+      mint(claimer.account, config.nft.gold_template_id, config.nft);
       gold_minted++;
     }
     claimer.gold_claimed += gold_minted;
   }
 
-  _accounts.modify(donator_itr, _self, [&](donations::accounts& row) {
+  _accounts.modify(donator_itr, _self, [&](donations::claimed& row) {
     row = claimer;
   });
 };

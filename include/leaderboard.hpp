@@ -26,7 +26,7 @@ struct Leaderboard {
     const auto& mint_price = lbconf.nft.mint_price_min;
     const auto& max_mint = lbconf.nft.max_bronze_mint_per_round;
     auto by_score = _leaderboard.get_index<"byscore"_n>();
-    donations::accounts_table _accounts(_self, _self.value);
+    donations::claimed_table _accounts(_self, _self.value);
     int allocated = 0;
     uint8_t rank = 1;
     auto price = mint_price;
@@ -50,13 +50,13 @@ struct Leaderboard {
       auto accts_itr = _accounts.find(userrank.donator.value);
       // create account if this is the first time for this user to win
       if(accts_itr == _accounts.end()) {
-        _accounts.emplace(_self, [&](donations::accounts& row) {
+        _accounts.emplace(_self, [&](donations::claimed& row) {
           row.account = userrank.donator;
           row.bronze_unclaimed = to_mint;
         });
       } else {
         // add to their unclaimed balance
-        _accounts.modify(accts_itr, _self, [&](donations::accounts& row) {
+        _accounts.modify(accts_itr, _self, [&](donations::claimed& row) {
           row.bronze_unclaimed = u8add(to_mint, row.bronze_unclaimed);
         });
       }

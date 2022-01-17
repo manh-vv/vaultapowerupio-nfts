@@ -13,6 +13,25 @@ const methods = {
       "waits": []
     }
     await doAction('updateauth', { account: contractAccount, auth, parent: 'owner', permission: 'active' }, 'eosio', contractAccount)
+  },
+  async buyRam(bytes) {
+    const data = {
+      payer: contractAccount,
+      receiver: contractAccount,
+      bytes
+    }
+    await doAction('buyrambytes', data, 'eosio', contractAccount)
+  },
+  async powerUp(account = contractAccount, cpu_frac = 1e9) {
+    const data = {
+      "payer": account,
+      "receiver": account,
+      "days": 1,
+      cpu_frac,
+      "net_frac": 12076497,
+      "max_payment": "0.1000 EOS"
+    }
+    await doAction('powerup', data, 'eosio', account)
   }
 }
 

@@ -12,6 +12,52 @@
           "type": "name"
         },
         {
+          "name": "bronze_bal",
+          "type": "uint16"
+        },
+        {
+          "name": "silver_bal",
+          "type": "uint16"
+        },
+        {
+          "name": "gold_bal",
+          "type": "uint16"
+        }
+      ]
+    },
+    {
+      "name": "balances",
+      "base": "",
+      "fields": [
+        {
+          "name": "template_id",
+          "type": "uint32"
+        },
+        {
+          "name": "balance",
+          "type": "uint16"
+        }
+      ]
+    },
+    {
+      "name": "claim",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
+        }
+      ]
+    },
+    {
+      "name": "claimed",
+      "base": "",
+      "fields": [
+        {
+          "name": "account",
+          "type": "name"
+        },
+        {
           "name": "bronze_unclaimed",
           "type": "uint8"
         },
@@ -30,17 +76,22 @@
       ]
     },
     {
-      "name": "claim",
+      "name": "clraccounts",
+      "base": "",
+      "fields": []
+    },
+    {
+      "name": "clrbalances",
       "base": "",
       "fields": [
         {
-          "name": "donator",
+          "name": "scope",
           "type": "name"
         }
       ]
     },
     {
-      "name": "clraccounts",
+      "name": "clrclaimed",
       "base": "",
       "fields": []
     },
@@ -155,11 +206,19 @@
           "type": "uint8"
         },
         {
-          "name": "bronze_to_silver",
+          "name": "deposit_bronze_for_silver",
           "type": "uint8"
         },
         {
-          "name": "silver_to_gold",
+          "name": "deposit_silver_for_gold",
+          "type": "uint8"
+        },
+        {
+          "name": "bonus_silver_per_bronze_claimed",
+          "type": "uint8"
+        },
+        {
+          "name": "bonus_gold_per_silver_claimed",
           "type": "uint8"
         },
         {
@@ -311,6 +370,16 @@
       "ricardian_contract": ""
     },
     {
+      "name": "clrbalances",
+      "type": "clrbalances",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "clrclaimed",
+      "type": "clrclaimed",
+      "ricardian_contract": ""
+    },
+    {
       "name": "clrconfig",
       "type": "clrconfig",
       "ricardian_contract": ""
@@ -360,6 +429,20 @@
     {
       "name": "accounts",
       "type": "accounts",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    },
+    {
+      "name": "balances",
+      "type": "balances",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    },
+    {
+      "name": "claimed",
+      "type": "claimed",
       "index_type": "i64",
       "key_names": [],
       "key_types": []

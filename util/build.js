@@ -40,15 +40,23 @@ const initPrams = (chain) => {
 const methods = {
   async debug(data) {
     try {
+      try {
+        const stats = await fs.stat(`../build/${conf.contractName}.wasm`)
+        console.log('wasm size preBuild:', stats.size / 1000, 'kb');
+      } catch (error) {
+        console.log('no existing wasm file to check size.')
+      }
       fs.ensureDirSync('../build')
       const params = initPrams('debug')
         .concat([
           '-o',
           `./build/${conf.contractName}.wasm`])
-      console.log("Building with params:")
-      console.log(params)
+      // console.log("Building with params:")
+      // console.log(params)
       console.log("Building...")
       await runCommand('eosio-cpp', params)
+      const stats2 = await fs.stat(`../build/${conf.contractName}.wasm`)
+      console.log('wasm size postBuild:', stats2.size / 1000, 'kb');
 
     } catch (error) {
       console.error(error.toString())
@@ -66,7 +74,9 @@ if (require.main == module) {
   if (Object.keys(methods).find(el => el === param)) {
     console.log("Starting:", param)
     methods[param](...process.argv.slice(3)).catch((error) => console.error(error))
-      .then((result) => console.log('Finished'))
+      .then((result) => {
+        console.log('Finished')
+      })
   } else {
     console.log("Available Commands:")
     console.log(JSON.stringify(Object.keys(methods), null, 2))

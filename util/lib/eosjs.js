@@ -38,7 +38,22 @@ const formatBloksTransaction = (network, txId) => {
   }
   return `https://${bloksSubdomain}/transaction/${txId}`;
 };
-
+async function getFullTable({ code, scope, table }) {
+  let limit = 100
+  let results = []
+  let lower_bound = ""
+  const loop = async () => {
+    const result = await api.rpc.get_table_rows({ code, scope, table, limit, lower_bound })
+    for (const row of result.rows) results.push(row)
+    if (result.more) {
+      console.log(results.length);
+      lower_bound = result.next_key
+      return loop()
+    }
+  }
+  await loop()
+  return results
+}
 async function doAction(name, data, account, auth) {
   try {
     if (!data) data = {}
@@ -71,7 +86,7 @@ function init(keys, apiurl) {
   rpc = new JsonRpc(apiurl, { fetch })
   api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
 
-  return { api, rpc, tapos, doAction, formatBloksTransaction }
+  return { api, rpc, tapos, doAction, formatBloksTransaction, getFullTable }
 }
 
 module.exports = init

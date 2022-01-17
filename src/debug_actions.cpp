@@ -26,7 +26,11 @@ ACTION donations::clrrounds() {
   cleanTable<donations::rounds_table>(get_self(), get_self().value, 100);
 };
 
-ACTION donations::clraccounts() {
+ACTION donations::clrclaimed() {
   require_auth(get_self());
-  cleanTable<donations::accounts_table>(get_self(), get_self().value, 100);
+  cleanTable<donations::claimed_table>(get_self(), get_self().value, 100);
+};
+ACTION donations::clrbalances(name scope) {
+  require_auth(get_self());
+  cleanTable<donations::balances_table>(get_self(), scope.value, 100);
 };

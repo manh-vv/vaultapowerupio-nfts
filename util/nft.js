@@ -1,7 +1,7 @@
 
 const conf = require('../eosioConfig')
 const env = require('../.env.js')
-const { api, tapos, doAction } = require('./lib/eosjs')()
+const { api, tapos, doAction, getFullTable } = require('./lib/eosjs')()
 const activeChain = process.env.CHAIN || env.defaultChain
 const defaultParams = { scope: conf.accountName[activeChain], code: conf.accountName[activeChain] }
 const meta = require('./nftMetadata')
@@ -13,11 +13,54 @@ const defaultCollectionData = [
 ]
 
 const methods = {
+  async mintMany(account = defaultParams.code) {
+    const authorization = [{ actor: account, permission: 'active' }]
+    let actions = []
+    const data = {
+      authorized_minter: defaultParams.code,
+      collection_name: 'eospwrupnfts',
+      schema_name: 'elemental',
+      template_id: '127',
+      new_asset_owner: 'eospwrupnfts',
+      immutable_data: [],
+      mutable_data: [],
+      tokens_to_back: []
+    }
+    let i = 0
+    while (i < 1000) {
+      actions.push({ account: 'atomicassets', name: 'mintasset', data, authorization })
+      i++
+    }
+    const result = await api.transact({ actions }, tapos)
+    console.log(result)
+  },
+  async burnAll(account = defaultParams.code) {
+    const result = await getFullTable({ code: 'atomicassets', scope: account, table: 'assets' })
+    console.log(result.length);
+    const authorization = [{ actor: account, permission: 'active' }]
+    let actions = []
+    for (const nft of result) {
+      const data = { account: 'atomicassets', name: 'burnasset', data: { asset_owner: account, asset_id: nft.asset_id }, authorization }
+      actions.push(data)
+      // console.log(data)
+    }
+    if (actions.length == 0) throw ('no NFTs to burn')
+    const txresult = await api.transact({ actions }, tapos)
+    console.log(txresult.transactionId);
+  },
   async transfer(from, to, asset, memo) {
     await doAction('transfer', {
       from,
       to,
-      asset_ids: [parseInt(asset)],
+      asset_ids: [asset],
+      memo
+    }, 'atomicassets', from)
+  },
+  async transferMany(from, to, asset, memo) {
+    await doAction('transfer', {
+      from,
+      to,
+      asset_ids: [2199023260587, 2199023260588],
       memo
     }, 'atomicassets', from)
   },
@@ -59,20 +102,27 @@ const methods = {
       transferable: true,
       burnable: true,
       max_supply: 0,
-      immutable_data: meta.genesis.silver
+      immutable_data: meta.genesis.bronze
     }, 'atomicassets', defaultParams.code)
   },
   async mint() {
     await doAction('mintasset', {
       authorized_minter: defaultParams.code,
       collection_name: 'eospwrupnfts',
-      schema_name: 'genesis',
-      template_id: '324887',
+      schema_name: 'elemental',
+      template_id: '127',
       new_asset_owner: 'eospwrupnfts',
       immutable_data: [],
       mutable_data: [],
       tokens_to_back: []
     }, 'atomicassets', defaultParams.code)
+  },
+  async burn(asset_owner, asset_id) {
+    const data = {
+      asset_owner,
+      asset_id
+    }
+    await doAction('burnasset', data, 'atomicassets', asset_owner)
   }
 }
 

@@ -1,4 +1,4 @@
-const conf = require('./eosioConfig')
+const conf = require('../eosioConfig')
 const env = require('../.env.js')
 const utils = require('@deltalabs/eos-utils')
 const { api, tapos, doAction } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
@@ -27,6 +27,14 @@ const methods = {
       await doAction('clrleaderb', { scope })
     }
   },
+  async clearBalances() {
+    const scopes = (await api.rpc.get_table_by_scope({ code: contractAccount, table: "balances" })).rows.map(el => el.scope)
+    console.log('balances:', scopes.length);
+    for (let scope of scopes) {
+      console.log(scope);
+      await doAction('clrbalances', { scope })
+    }
+  },
   async setconfig(cfg) {
     cfg = {
       round_length_sec: 60 * 2,
@@ -40,13 +48,15 @@ const methods = {
         mint_price_min: "1.0000 EOS",
         mint_price_increase_by_rank: "0.1000 EOS",
         max_bronze_mint_per_round: 10,
-        bronze_to_silver: 5,
-        silver_to_gold: 3,
+        bonus_silver_per_bronze_claimed: 5,
+        bonus_gold_per_silver_claimed: 3,
         collection_name: 'eospwrupnfts',
         schema_name: 'elemental',
-        bronze_template_id: 4,
-        silver_template_id: 7,
-        gold_template_id: 6
+        bronze_template_id: 127,
+        silver_template_id: 126,
+        gold_template_id: 128,
+        deposit_bronze_for_silver: 2,
+        deposit_silver_for_gold: 2
       }
     }
     await doAction('setconfig', { cfg })
