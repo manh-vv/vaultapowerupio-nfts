@@ -14,6 +14,7 @@ void donations::mint(name receiver, uint32_t template_id, nft_config nft_conf) {
   const auto data = make_tuple(get_self(), nft_conf.collection_name, nft_conf.schema_name, template_id, receiver, blank_data, blank_data, tokens_to_back);
   action(donations::active_auth, name("atomicassets"), name("mintasset"), data).send();
 };
+
 void donations::burn(uint64_t asset_id) {
   const auto data = make_tuple(get_self(), asset_id);
   action(active_auth, name("atomicassets"), name("burnasset"), data).send();
@@ -49,7 +50,6 @@ void donations::atomic_burn(name asset_owner,
   map<uint32_t, uint16_t> template_counts;
   template_counts[template_id] = 1;
   balances_table balances_t(get_self(), asset_owner.value);
-  // check(false, asset_owner.to_string());
   if(asset_owner == get_self()) return;
   sub_nfts(template_counts, balances_t);
 };
@@ -148,7 +148,6 @@ void donations::nft_offer_swap(name receiver, map<uint32_t, uint16_t> nft_deltas
   if(template_id == nft_conf.bronze_template_id) {
     check(quantity == nft_conf.deposit_bronze_for_silver, "You need to transfer exactly " + to_string(nft_conf.deposit_bronze_for_silver) + " bronze nfts to mint a silver one");
     mint(receiver, nft_conf.silver_template_id, nft_conf);
-
   } else if(template_id == nft_conf.silver_template_id) {
     check(quantity == nft_conf.deposit_silver_for_gold, "You need to transfer exactly " + to_string(nft_conf.deposit_silver_for_gold) + " bronze nfts to mint a silver one");
     mint(receiver, nft_conf.gold_template_id, nft_conf);

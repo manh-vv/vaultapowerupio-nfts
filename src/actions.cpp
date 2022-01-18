@@ -8,8 +8,6 @@ ACTION donations::setconfig(const config& cfg) {
   check(cfg.round_length_sec > 0, "round_length_sec must be greater than 0");
   check(cfg.compound_step_sec > 0, "compound_step_sec must be greater than 0");
   check(cfg.round_length_sec > cfg.compound_step_sec, "round_length_sec must be greater then compound_step_sec");
-  // check(cfg.start_time > NOW , "start_time must be in the future");
-  //todo, review config checks.
 
   config_table _config(get_self(), get_self().value);
   _config.set(cfg, get_self());
@@ -36,10 +34,10 @@ ACTION donations::clrround(uint64_t& round_id) {
 
 ACTION donations::rewardround(uint64_t& round_id) {
   Leaderboard lb(get_self());
-  check(round_id != lb.round_id, "can't reward current round, wait until next round starts");
+  check(round_id != lb.round_id, "can't reward current round, wait until round has ended");
   rounds_table _rounds(get_self(), get_self().value);
   auto r_itr = _rounds.require_find(round_id, "round doesn't exist");
-  // check(!r_itr->rewarded, "rewards already generated for this round"); // temp for debugging
+  check(!r_itr->rewarded, "rewards already generated for this round");
   const auto reward_data = lb.generate_round_rewards(round_id, *r_itr);
   action(active_auth, get_self(), name("rewardlog"), make_tuple(*r_itr, reward_data)).send();
   _rounds.modify(r_itr, get_self(), [&](rounds& row) {
@@ -52,14 +50,13 @@ ACTION donations::rewardlog(rounds& round_data, vector<rewards_data>& rewards_da
 };
 
 ACTION donations::rmaccount(name& donator) {
-  check(has_auth(get_self()) || has_auth(donator), "not authorized");
+  require_auth(get_self());
   claimed_table _accounts(get_self(), get_self().value);
   const auto donator_itr = _accounts.require_find(donator.value, "donator doesn't have an account");
   _accounts.erase(donator_itr);
 };
 
 ACTION donations::claim(name& donator) {
-  // check(has_auth(get_self()) || has_auth(donator), "not authorized");
   donations::claimed_table _accounts(_self, _self.value);
   config_table _config(get_self(), get_self().value);
   const auto config = _config.get();

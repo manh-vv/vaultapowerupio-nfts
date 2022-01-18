@@ -21,7 +21,6 @@ struct Leaderboard {
 
   vector<rewards_data> generate_round_rewards(uint64_t round_id, donations::rounds round_data) {
     donations::leaderboard_table _leaderboard(_self, round_id);
-    auto const self = _self;
     const auto& total = round_data.total_donated;
     const auto& mint_price = lbconf.nft.mint_price_min;
     const auto& max_mint = lbconf.nft.max_bronze_mint_per_round;
@@ -36,15 +35,15 @@ struct Leaderboard {
         ldbrd_itr++, rank++  //
     ) {
       const auto userrank = *ldbrd_itr;
-      print("\nname: ", userrank.donator, "\n");
-      print("donated: ", userrank.donated.to_string(), "\n");
-      print("mint_price: ", price.to_string(), "\n");
-      if(userrank.donated < mint_price) continue;
+      // print("\nname: ", userrank.donator, "\n");
+      // print("donated: ", userrank.donated.to_string(), "\n");
+      // print("mint_price: ", price.to_string(), "\n");
+      if(userrank.donated < mint_price) break;
       uint8_t remaining = max_mint - allocated;
       uint8_t mint_num = uint8_t(userrank.donated.amount / price.amount);
       price += lbconf.nft.mint_price_increase_by_rank;
       uint8_t to_mint = min(remaining, mint_num);
-      print("to_mint: ", to_string(to_mint), "\n");
+      // print("to_mint: ", to_string(to_mint), "\n");
       if(to_mint == 0) continue;
       allocated += to_mint;
       auto accts_itr = _accounts.find(userrank.donator.value);
@@ -55,9 +54,9 @@ struct Leaderboard {
           row.bronze_unclaimed = to_mint;
         });
       } else {
-        // add to their unclaimed balance
+        // otherwise add to their unclaimed balance
         _accounts.modify(accts_itr, _self, [&](donations::claimed& row) {
-          row.bronze_unclaimed = u8add(to_mint, row.bronze_unclaimed);
+          row.bronze_unclaimed = (uint8_t)min(to_mint + row.bronze_unclaimed, UINT8_MAX);
         });
       }
       const auto rwd_dta = rewards_data {

@@ -64,7 +64,7 @@ CONTRACT donations: public contract {
     uint32_t gold_template_id;
   };
 
-  //table defenitions
+  //table definitions
   TABLE config {
     uint64_t round_length_sec = 7 * 24 * 60 * 60;
     eosio::time_point_sec start_time;
@@ -136,8 +136,7 @@ CONTRACT donations: public contract {
   ACTION claim(name & donator);
 
 #if defined(DEBUG)
-  ACTION
-  simdonation(name donator, asset donation);
+  ACTION simdonation(name donator, asset donation);
   ACTION clrleaderb(uint64_t scope);
   ACTION clrrounds();
   ACTION clrclaimed();
