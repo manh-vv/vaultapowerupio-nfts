@@ -1,4 +1,4 @@
-const conf = require('./eosioConfig')
+const conf = require('../eosioConfig')
 const env = require('../.env.js')
 const { api, tapos, doAction } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
 const contractAccount = conf.accountName[env.defaultChain]
@@ -18,15 +18,13 @@ const methods = {
     console.log("current Round: ", round);
   },
 
-  async deposit(quantity, from,) {
+  async transfer(quantity, from, to = contractAccount, memo = "", contract = 'eosio.token') {
     const data = {
       from,
-      to: contractAccount,
+      to,
       quantity,
-      memo: "deposit"
+      memo
     }
-    let contract = 'eosio.token'
-    // if (quantity.split(' ')[1] == 'BOID') contract = 'token.boid'
     await doAction('transfer', data, contract, from)
   },
 

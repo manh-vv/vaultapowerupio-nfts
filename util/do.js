@@ -1,10 +1,9 @@
-const conf = require('./eosioConfig')
+const conf = require('../eosioConfig')
 const env = require('../.env.js')
 const utils = require('@deltalabs/eos-utils')
 const { api, tapos, doAction } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
-// api.de
-// api.deserialize(, 'name')
-const contractAccount = conf.accountName[env.defaultChain]
+const activeChain = process.env.CHAIN || env.defaultChain
+const contractAccount = conf.accountName[activeChain]
 var watchAccountSample = require('./lib/sample_watchaccount')
 
 const methods = {
@@ -28,20 +27,37 @@ const methods = {
       await doAction('clrleaderb', { scope })
     }
   },
+  async clearBalances() {
+    const scopes = (await api.rpc.get_table_by_scope({ code: contractAccount, table: "balances" })).rows.map(el => el.scope)
+    console.log('balances:', scopes.length);
+    for (let scope of scopes) {
+      console.log(scope);
+      await doAction('clrbalances', { scope })
+    }
+  },
   async setconfig(cfg) {
     cfg = {
-      round_length_sec: 60 * 2,
+      round_length_sec: 60 * 10,
       minimum_donation: "1.0000 EOS",
       enabled: 1,
       compound_decay_pct: 0.05,
       start_decay_after_sec: 60,
       compound_step_sec: 60,
       start_time: "2022-01-12T00:00:00",
-      mint_price_min: "1.0000 EOS",
-      mint_price_increase_by_rank: "0.1000 EOS",
-      max_mint_per_round: 7,
-      bronze_to_silver: 20,
-      silver_to_gold: 10
+      nft: {
+        mint_price_min: "1.0000 EOS",
+        mint_price_increase_by_rank: "0.1000 EOS",
+        max_bronze_mint_per_round: 20,
+        bonus_silver_per_bronze_claimed: 5,
+        bonus_gold_per_silver_claimed: 3,
+        collection_name: 'eospwrupnfts',
+        schema_name: 'elemental',
+        bronze_template_id: 127,
+        silver_template_id: 126,
+        gold_template_id: 128,
+        deposit_bronze_for_silver: 20,
+        deposit_silver_for_gold: 10
+      }
     }
     await doAction('setconfig', { cfg })
   },
@@ -62,6 +78,9 @@ const methods = {
   },
   async clraccounts() {
     await doAction('clraccounts')
+  },
+  async claim(donator) {
+    await doAction('claim', { donator })
   }
 }
 
