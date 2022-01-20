@@ -37,7 +37,7 @@ const methods = {
   },
   async setconfig(cfg) {
     cfg = {
-      round_length_sec: 60 * 2,
+      round_length_sec: 60 * 10,
       minimum_donation: "1.0000 EOS",
       enabled: 1,
       compound_decay_pct: 0.05,
@@ -47,7 +47,7 @@ const methods = {
       nft: {
         mint_price_min: "1.0000 EOS",
         mint_price_increase_by_rank: "0.1000 EOS",
-        max_bronze_mint_per_round: 10,
+        max_bronze_mint_per_round: 20,
         bonus_silver_per_bronze_claimed: 5,
         bonus_gold_per_silver_claimed: 3,
         collection_name: 'eospwrupnfts',
@@ -55,8 +55,8 @@ const methods = {
         bronze_template_id: 127,
         silver_template_id: 126,
         gold_template_id: 128,
-        deposit_bronze_for_silver: 2,
-        deposit_silver_for_gold: 2
+        deposit_bronze_for_silver: 20,
+        deposit_silver_for_gold: 10
       }
     }
     await doAction('setconfig', { cfg })
