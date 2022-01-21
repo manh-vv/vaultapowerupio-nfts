@@ -37,15 +37,15 @@ const methods = {
   },
   async setconfig(cfg) {
     cfg = {
-      round_length_sec: 60 * 10,
-      minimum_donation: "1.0000 EOS",
+      round_length_sec: 60 * 60 * 6,
+      minimum_donation: "0.1000 EOS",
       enabled: 1,
       compound_decay_pct: 0.05,
-      start_decay_after_sec: 60,
-      compound_step_sec: 60,
+      decay_step_sec: 60 * 60,//every hour
+      start_decay_after_steps: 5,//don't decay the first 5 hours = decay_step_sec*start_decay_after_steps
       start_time: "2022-01-12T00:00:00",
       nft: {
-        mint_price_min: "1.0000 EOS",
+        mint_price_min: "0.2000 EOS",
         mint_price_increase_by_rank: "0.1000 EOS",
         max_bronze_mint_per_round: 20,
         bonus_silver_per_bronze_claimed: 5,

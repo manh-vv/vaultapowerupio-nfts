@@ -6,8 +6,8 @@ ACTION donations::setconfig(const config& cfg) {
   require_auth(get_self());
   //validate config
   check(cfg.round_length_sec > 0, "round_length_sec must be greater than 0");
-  check(cfg.compound_step_sec > 0, "compound_step_sec must be greater than 0");
-  check(cfg.round_length_sec > cfg.compound_step_sec, "round_length_sec must be greater then compound_step_sec");
+  check(cfg.decay_step_sec > 0, "decay_step_sec must be greater than 0");
+  check(cfg.round_length_sec > (cfg.decay_step_sec * cfg.start_decay_after_steps), "round_length_sec must be greater than the no decay period.");
 
   config_table _config(get_self(), get_self().value);
   _config.set(cfg, get_self());

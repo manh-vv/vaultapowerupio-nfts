@@ -95,14 +95,14 @@ struct Leaderboard {
  private:
   bool disable_leaderboard() {
     if(!lbconf.enabled) {
-      //eosio::check(false, "Leaderboard disabled in config.");
-      eosio::print("Leaderboard disabled in config.");
+      eosio::check(false, "Leaderboard disabled in config.");
+
       return true;
     }
     if(lbconf.start_time > now) {
       int wait_seconds = lbconf.start_time.sec_since_epoch() - now.sec_since_epoch();
-      //eosio::check(false, "Leaderboard not active. wait "+to_string(wait_seconds)+" seconds");
       eosio::print("Leaderboard not active. wait " + to_string(wait_seconds) + " seconds");
+      eosio::check(false, "Leaderboard not active. wait " + to_string(wait_seconds) + " seconds");
       return true;
     }
     return false;
@@ -111,7 +111,6 @@ struct Leaderboard {
   uint64_t get_round_id() {
     int time_passed = (now.sec_since_epoch() - lbconf.start_time.sec_since_epoch());
     uint64_t id = floor(time_passed / lbconf.round_length_sec) + 1;
-    // check(false, "current round:" + to_string(id));
     return id;
   }
 
@@ -119,12 +118,14 @@ struct Leaderboard {
     //bonus calculation = pv * Math.pow((1-r), n)
     int pv = donation.amount;
     int sec_passed = now.sec_since_epoch() - get_round_start_time().sec_since_epoch();
-    if(sec_passed < lbconf.start_decay_after_sec) {
-      //bonus decay didn't kick in so give full bonus
-      return pv * 2;
-    }
+    int step = floor(sec_passed / lbconf.decay_step_sec);  //calculate in which compounding/decay step we are.
 
-    int step = floor(sec_passed / lbconf.compound_step_sec);  //calculate in which compounding/decay step we are.
+    if(step > lbconf.start_decay_after_steps) {
+      step -= lbconf.start_decay_after_steps;
+    } else {
+      //no bonus decay so we stay at step 0
+      step = 0;
+    }
     double r = lbconf.compound_decay_pct;
     uint64_t bonus = (uint64_t)(pv * pow(1 - r, step));
     uint64_t score = bonus + pv;

@@ -4,28 +4,6 @@
   "types": [],
   "structs": [
     {
-      "name": "accounts",
-      "base": "",
-      "fields": [
-        {
-          "name": "account",
-          "type": "name"
-        },
-        {
-          "name": "bronze_bal",
-          "type": "uint16"
-        },
-        {
-          "name": "silver_bal",
-          "type": "uint16"
-        },
-        {
-          "name": "gold_bal",
-          "type": "uint16"
-        }
-      ]
-    },
-    {
       "name": "balances",
       "base": "",
       "fields": [
@@ -74,11 +52,6 @@
           "type": "uint8"
         }
       ]
-    },
-    {
-      "name": "clraccounts",
-      "base": "",
-      "fields": []
     },
     {
       "name": "clrbalances",
@@ -150,12 +123,12 @@
           "type": "float32"
         },
         {
-          "name": "compound_step_sec",
-          "type": "uint32"
+          "name": "decay_step_sec",
+          "type": "uint64"
         },
         {
-          "name": "start_decay_after_sec",
-          "type": "uint32"
+          "name": "start_decay_after_steps",
+          "type": "uint64"
         },
         {
           "name": "nft",
@@ -365,11 +338,6 @@
       "ricardian_contract": ""
     },
     {
-      "name": "clraccounts",
-      "type": "clraccounts",
-      "ricardian_contract": ""
-    },
-    {
       "name": "clrbalances",
       "type": "clrbalances",
       "ricardian_contract": ""
@@ -426,13 +394,6 @@
     }
   ],
   "tables": [
-    {
-      "name": "accounts",
-      "type": "accounts",
-      "index_type": "i64",
-      "key_names": [],
-      "key_types": []
-    },
     {
       "name": "balances",
       "type": "balances",

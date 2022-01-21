@@ -73,8 +73,10 @@ CONTRACT donations: public contract {
     bool enabled = 0;  //disable leaderboard but still keep donations enabled
 
     float compound_decay_pct = 0.03;
-    uint32_t compound_step_sec = DAY_SEC;
-    uint32_t start_decay_after_sec = 0;
+    // uint32_t compound_step_sec = DAY_SEC;
+    // uint32_t start_decay_after_sec = 0;
+    uint64_t decay_step_sec = DAY_SEC;
+    uint64_t start_decay_after_steps = 0;
     nft_config nft;
   };
   typedef eosio::singleton<"config"_n, config> config_table;

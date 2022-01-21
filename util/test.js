@@ -1,6 +1,6 @@
 const conf = require('../eosioConfig')
 const env = require('../.env.js')
-const { api, tapos, doAction } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
+const { api, tapos, doAction, getFullTable } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
 const contractAccount = conf.accountName[env.defaultChain]
 const contractActions = require('./do.js')
 
@@ -16,6 +16,23 @@ const methods = {
     console.log('elapsed:', elapsed);
     const round = Math.floor(elapsed / conf.round_length_sec) + 1
     console.log("current Round: ", round);
+  },
+  async claimAll() {
+    const results = await getFullTable({ code: contractAccount, scope: contractAccount, table: 'claimed' })
+    const filtered = results.filter(el => el.bronze_unclaimed > 0)
+    for (const row of filtered) {
+      await contractActions.claim(row.account)
+    }
+  },
+  async rewardAllRounds() {
+    const result = await getFullTable({ code: contractAccount, scope: contractAccount, table: "rounds" })
+    console.log(result.length)
+    let i = 0
+    for (const round of result) {
+      if (round.rewarded == 1) continue
+      await contractActions.rewardround(round.id)
+    }
+    await this.claimAll()
   },
 
   async transfer(quantity, from, to = contractAccount, memo = "", contract = 'eosio.token') {
