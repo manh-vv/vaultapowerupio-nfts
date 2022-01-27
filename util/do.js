@@ -43,7 +43,7 @@ const methods = {
       compound_decay_pct: 0.08,
       decay_step_sec: 60 * 60 * 24,
       start_decay_after_steps: 1,
-      start_time: "2022-01-28T00:00:00",
+      start_time: "2022-01-27T11:30:00",
       nft: {
         mint_price_min: "1.0000 EOS",
         mint_price_increase_by_rank: "0.1000 EOS",
