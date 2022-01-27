@@ -5,10 +5,11 @@ const activeChain = process.env.CHAIN || env.defaultChain
 const contractAccount = conf.accountName[activeChain]
 
 const methods = {
-  async updateAuth() {
+  async updateAuth(pubkey) {
+    if (!pubkey) pubkey = "EOS6FoTSwiKk27SJ1kANdJFmso3KbECASAMDpEka4dG9p1ub6GqiH"
     const auth = {
       "threshold": 1,
-      "keys": [{ key: "EOS6FoTSwiKk27SJ1kANdJFmso3KbECASAMDpEka4dG9p1ub6GqiH", weight: 1 }],
+      "keys": [{ key: pubkey, weight: 1 }],
       "accounts": [{ "permission": { "actor": contractAccount, "permission": "eosio.code" }, "weight": 1 }],
       "waits": []
     }

@@ -8,7 +8,8 @@ module.exports = {
   },
   accountName: {
     telosTest: "eospwrupnfts",
-    jungle: "eospwrupnfts"
+    jungle: "eospwrupnfts",
+    eos: "powerup.nfts"
   },
   contractName: 'donations',
   cppName: 'donations'
