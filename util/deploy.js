@@ -45,7 +45,7 @@ const methods = {
   async jungle(type) {
     const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.jungle, conf.endpoints.jungle[0])
 
-    const authorization = [{ actor: conf.accountName.telosTest, permission: 'owner' }]
+    const authorization = [{ actor: conf.accountName.jungle, permission: 'owner' }]
     // console.log(authorization);
     if (!type) type = 'debug'
     const abiAction = new Promise(async (res) => {
@@ -61,6 +61,28 @@ const methods = {
       res()
     })
     await Promise.all([abiAction, wasmAction])
+
+  },
+  async eos(type) {
+    const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.eos, conf.endpoints.eos[0])
+
+    const authorization = [{ actor: conf.accountName.eos, permission: 'active' }]
+    // console.log(authorization);
+    if (!type) type = 'debug'
+    const abiAction = new Promise(async (res) => {
+      console.log("Pushing ABI");
+      const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
+      if (result) console.log('ABI: https://telos-test.bloks.io/transaction/' + result.transaction_id)
+      res()
+    })
+    const wasmAction = new Promise(async (res) => {
+      console.log("Pushing WASM");
+      const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
+      if (result2) console.log('WASM: https://telos-test.bloks.io/transaction/' + result2.transaction_id)
+      res()
+    })
+    await Promise.all([abiAction, wasmAction])
+    // await Promise.all([wasmAction])
 
   },
   async telos(type) {

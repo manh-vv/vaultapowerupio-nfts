@@ -66,11 +66,12 @@ async function doAction(name, data, account, auth) {
       actions: [{ account, name, data, authorization }]
     }, tapos)
     const txid = result.transaction_id
-    // console.log(`https://${chainName()}.bloks.io/transaction/` + txid)
+    console.log(result);
     console.log(formatBloksTransaction(activeChain, txid))
     console.log(result.processed.action_traces[0]?.console);
     return result
   } catch (error) {
+    console.log('error');
     console.log(JSON.stringify(error, null, 2))
     console.error(error.toString())
     if (error.json) console.error("Logs:", error.json?.error?.details[1]?.message)
@@ -81,7 +82,7 @@ function init(keys, apiurl) {
   const signatureProvider = new JsSignatureProvider(keys)
   const fetch = require('node-fetch')
 
-  if (!apiurl) apiurl = conf.endpoints[activeChain][0]
+  if (!apiurl) apiurl = conf.endpoints[activeChain][1] || conf.endpoints[activeChain][1] || conf.endpoints[activeChain][0]
   console.log(apiurl);
   rpc = new JsonRpc(apiurl, { fetch })
   api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })

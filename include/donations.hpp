@@ -46,7 +46,6 @@ CONTRACT donations: public contract {
                                                                     vector<asset> backed_tokens,
                                                                     atomicassets::ATTRIBUTE_MAP immutable_template_data);
   [[eosio::on_notify("*::transfer")]] void token_deposit(name from, name to, asset quantity, string memo);
-
   eosio::time_point_sec NOW = eosio::time_point_sec(eosio::current_time_point());
   const permission_level active_auth = permission_level {get_self(), "active"_n};
   struct nft_config {

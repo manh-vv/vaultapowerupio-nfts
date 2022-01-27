@@ -50,7 +50,7 @@ void donations::atomic_burn(name asset_owner,
   map<uint32_t, uint16_t> template_counts;
   template_counts[template_id] = 1;
   balances_table balances_t(get_self(), asset_owner.value);
-  if(asset_owner == get_self()) return;
+  // if(asset_owner == get_self()) return;
   sub_nfts(template_counts, balances_t);
 };
 
@@ -156,3 +156,23 @@ void donations::nft_offer_swap(name receiver, map<uint32_t, uint16_t> nft_deltas
   } else
     check(false, "can't deposit that NFT");
 }
+
+// void donations::logburnasset(
+//   name asset_owner,
+//   uint64_t asset_id,
+//   name collection_name,
+//   name schema_name,
+//   int32_t template_id,
+//   vector<asset> backed_tokens,
+//   atomicassets::ATTRIBUTE_MAP old_immutable_data,
+//   atomicassets::ATTRIBUTE_MAP old_mutable_data,
+//   name asset_ram_payer  //
+// ) {
+//   check(false, "test");
+//   const name tkn_contract = get_first_receiver();
+//   if(tkn_contract != name("atomicassets")) return;
+//   config_table _config(get_self(), get_self().value);
+//   const auto config = _config.get();
+//   if(collection_name != config.nft.collection_name) return;
+//   check(asset_owner == get_self(), "can't burn NFTs this way. Visit eospowerup.io/nft to burn NFTs and mint higher rarities.");
+// }

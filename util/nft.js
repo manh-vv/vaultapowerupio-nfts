@@ -67,7 +67,7 @@ const methods = {
   async createCollection() {
     await doAction('createcol', {
       author: defaultParams.code,
-      collection_name: 'eospwrupnfts',
+      collection_name: 'powerup.nfts',
       allow_notify: true,
       authorized_accounts: [defaultParams.code],
       notify_accounts: [defaultParams.code],
@@ -77,7 +77,7 @@ const methods = {
   },
   async setCollectionData() {
     await doAction('setcoldata', {
-      collection_name: "eospwrupnfts",
+      collection_name: "powerup.nfts",
       data: [
         { key: "name", value: ["string", "EOS PowerUp NFTs"] },
         { key: "img", value: ["string", "QmbncqcDy6pdNH6J7qTtdkmYrhyQ9BfaUwE4bbUPXURpE8"] },
@@ -89,29 +89,29 @@ const methods = {
   async createSchema() {
     await doAction('createschema', {
       authorized_creator: defaultParams.code,
-      collection_name: 'eospwrupnfts',
-      schema_name: 'elemental',
-      schema_format: meta.genesis.schema
+      collection_name: 'powerup.nfts',
+      schema_name: 'elements',
+      schema_format: meta.elements.schema
     }, 'atomicassets', defaultParams.code)
   },
   async createTemplate() {
     await doAction('createtempl', {
       authorized_creator: defaultParams.code,
-      collection_name: 'eospwrupnfts',
-      schema_name: "elemental",
+      collection_name: 'powerup.nfts',
+      schema_name: "elements",
       transferable: true,
       burnable: true,
       max_supply: 0,
-      immutable_data: meta.genesis.bronze
+      immutable_data: meta.elements.gold
     }, 'atomicassets', defaultParams.code)
   },
   async mint() {
     await doAction('mintasset', {
       authorized_minter: defaultParams.code,
-      collection_name: 'eospwrupnfts',
-      schema_name: 'elemental',
+      collection_name: 'powerup.nfts',
+      schema_name: 'elements',
       template_id: '127',
-      new_asset_owner: 'eospwrupnfts',
+      new_asset_owner: 'imjohnatboid',
       immutable_data: [],
       mutable_data: [],
       tokens_to_back: []
