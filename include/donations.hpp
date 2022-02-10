@@ -51,7 +51,8 @@ CONTRACT donations: public contract {
   struct nft_config {
     asset mint_price_min;                     // minimum price to sell a bronze NFT (1st place)
     asset mint_price_increase_by_rank;        // as the leaderboard rank decreases, increase the NFT mint price by this amount.
-    uint8_t max_bronze_mint_per_round;        // max number of bronze NFTs to mint per round
+    uint16_t mint_quantity_cap_per_rank;      // maximum number of bronze NFTs that can be minted per rank
+    uint16_t max_bronze_mint_per_round;       // max number of bronze NFTs to mint per round
     uint8_t deposit_bronze_for_silver;        // deposit this many bronze NFTS into the contract to mint a silver
     uint8_t deposit_silver_for_gold;          // deposit this many silver NFTS into the contract to mint a gold
     uint8_t bonus_silver_per_bronze_claimed;  // after this many bronze NFTs are claimed by an account a silver will be claimed

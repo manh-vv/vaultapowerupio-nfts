@@ -4,7 +4,7 @@
 
 ACTION donations::setconfig(const config& cfg) {
   require_auth(get_self());
-  //validate config
+  // validate config
   check(cfg.round_length_sec > 0, "round_length_sec must be greater than 0");
   check(cfg.decay_step_sec > 0, "decay_step_sec must be greater than 0");
   check(cfg.round_length_sec > (cfg.decay_step_sec * cfg.start_decay_after_steps), "round_length_sec must be greater than the no decay period.");
@@ -43,6 +43,15 @@ ACTION donations::rewardround(uint64_t& round_id) {
   _rounds.modify(r_itr, get_self(), [&](rounds& row) {
     row.rewarded = true;
   });
+  auto conf = lb._conf.get();
+  if(conf.nft.mint_price_min.amount > 1e4) {
+    if(r_itr->total_donated.amount > 1e6) {
+      conf.nft.mint_price_min += asset(1e3, symbol("EOS", 4));
+    } else {
+      conf.nft.mint_price_min -= asset(1e3, symbol("EOS", 4));
+    }
+    lb._conf.set(conf, get_self());
+  }
 };
 
 ACTION donations::rewardlog(rounds& round_data, vector<rewards_data>& rewards_data) {

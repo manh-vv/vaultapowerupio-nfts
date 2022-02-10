@@ -82,7 +82,7 @@ function init(keys, apiurl) {
   const signatureProvider = new JsSignatureProvider(keys)
   const fetch = require('node-fetch')
 
-  if (!apiurl) apiurl = conf.endpoints[activeChain][1] || conf.endpoints[activeChain][1] || conf.endpoints[activeChain][0]
+  if (!apiurl) apiurl = conf.endpoints[activeChain][0] || conf.endpoints[activeChain][1] || conf.endpoints[activeChain][0]
   console.log(apiurl);
   rpc = new JsonRpc(apiurl, { fetch })
   api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })

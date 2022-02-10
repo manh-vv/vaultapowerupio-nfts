@@ -13,25 +13,25 @@ const defaultCollectionData = [
 ]
 
 const methods = {
-  async mintMany(account = defaultParams.code) {
+  async mintMany(account = defaultParams.code, new_asset_owner = account) {
     const authorization = [{ actor: account, permission: 'active' }]
     let actions = []
     const data = {
-      authorized_minter: defaultParams.code,
-      collection_name: 'eospwrupnfts',
-      schema_name: 'elemental',
-      template_id: '127',
-      new_asset_owner: 'eospwrupnfts',
+      authorized_minter: account,
+      collection_name: 'powerup.nfts',
+      schema_name: 'elements',
+      template_id: '3648',
+      new_asset_owner: '.gems',
       immutable_data: [],
       mutable_data: [],
       tokens_to_back: []
     }
     let i = 0
-    while (i < 1000) {
+    while (i < 33) {
       actions.push({ account: 'atomicassets', name: 'mintasset', data, authorization })
       i++
     }
-    const result = await api.transact({ actions }, tapos)
+    const result = await api.transact({ actions }, tapos).catch(err => console.error(err))
     console.log(result)
   },
   async burnAll(account = defaultParams.code) {
@@ -109,9 +109,9 @@ const methods = {
     await doAction('mintasset', {
       authorized_minter: defaultParams.code,
       collection_name: 'powerup.nfts',
-      schema_name: 'elements',
-      template_id: '127',
-      new_asset_owner: 'imjohnatboid',
+      schema_name: 'genesis',
+      template_id: '3644',
+      new_asset_owner: 'luckyhahnryu',
       immutable_data: [],
       mutable_data: [],
       tokens_to_back: []

@@ -175,8 +175,12 @@
           "type": "asset"
         },
         {
+          "name": "mint_quantity_cap_per_rank",
+          "type": "uint16"
+        },
+        {
           "name": "max_bronze_mint_per_round",
-          "type": "uint8"
+          "type": "uint16"
         },
         {
           "name": "deposit_bronze_for_silver",

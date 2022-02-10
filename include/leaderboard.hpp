@@ -29,20 +29,22 @@ struct Leaderboard {
     int allocated = 0;
     uint8_t rank = 1;
     auto price = mint_price;
+    uint16_t max_mint_per_rank = lbconf.nft.mint_quantity_cap_per_rank;
+    // uint8_t max_mint_per_rank = 0;
     vector<rewards_data> rewards;
     for(auto ldbrd_itr = by_score.begin();
-        ldbrd_itr != by_score.end() && allocated != lbconf.nft.max_bronze_mint_per_round;
+        ldbrd_itr != by_score.end() && allocated != max_mint;
         ldbrd_itr++, rank++  //
     ) {
       const auto userrank = *ldbrd_itr;
-      // print("\nname: ", userrank.donator, "\n");
-      // print("donated: ", userrank.donated.to_string(), "\n");
-      // print("mint_price: ", price.to_string(), "\n");
+      print("\nname: ", userrank.donator, "\n");
+      print("donated: ", userrank.donated.to_string(), "\n");
+      print("mint_price: ", price.to_string(), "\n");
       if(userrank.donated < mint_price) break;
-      uint8_t remaining = max_mint - allocated;
-      uint8_t mint_num = uint8_t(userrank.donated.amount / price.amount);
+      uint16_t remaining = max_mint - allocated;
+      uint16_t mint_num = uint8_t(userrank.donated.amount / price.amount);
       price += lbconf.nft.mint_price_increase_by_rank;
-      uint8_t to_mint = min(remaining, mint_num);
+      uint8_t to_mint = (uint8_t)min(max_mint_per_rank, min(remaining, mint_num));
       // print("to_mint: ", to_string(to_mint), "\n");
       if(to_mint == 0) continue;
       allocated += to_mint;

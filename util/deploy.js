@@ -2,7 +2,7 @@ const { setAbiAction, setCodeAction } = require('./lib/encodeContractData')
 const conf = require('../eosioConfig')
 const fs = require('fs-extra')
 const env = require('../.env.js')
-
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const methods = {
 
@@ -11,20 +11,14 @@ const methods = {
 
     const authorization = [{ actor: conf.accountName.telosTest, permission: 'owner' }]
     // console.log(authorization);
-    if (!type) type = 'debug'
-    const abiAction = new Promise(async (res) => {
-      console.log("Pushing ABI");
-      const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
-      if (result) console.log('ABI: https://telos-test.bloks.io/transaction/' + result.transaction_id)
-      res()
-    })
-    const wasmAction = new Promise(async (res) => {
-      console.log("Pushing WASM");
-      const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
-      if (result2) console.log('WASM: https://telos-test.bloks.io/transaction/' + result2.transaction_id)
-      res()
-    })
-    await Promise.all([abiAction, wasmAction])
+    const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
+    if (result) console.log('ABI: https://telos-test.bloks.io/transaction/' + result.transaction_id)
+    await sleep(2000)
+    await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos)
+      .catch(err => console.log(err.toString()))
+      .then(result2 => console.log('WASM: https://telos-test.bloks.io/transaction/' + result2.transaction_id))
+
+
 
   },
   async waxTest(type) {
@@ -64,25 +58,16 @@ const methods = {
 
   },
   async eos(type) {
-    const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.eos, conf.endpoints.eos[0])
+    const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.eos, conf.endpoints.eos[1])
 
     const authorization = [{ actor: conf.accountName.eos, permission: 'active' }]
-    // console.log(authorization);
-    if (!type) type = 'debug'
-    const abiAction = new Promise(async (res) => {
-      console.log("Pushing ABI");
-      const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
-      if (result) console.log('ABI: https://telos-test.bloks.io/transaction/' + result.transaction_id)
-      res()
-    })
-    const wasmAction = new Promise(async (res) => {
-      console.log("Pushing WASM");
-      const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
-      if (result2) console.log('WASM: https://telos-test.bloks.io/transaction/' + result2.transaction_id)
-      res()
-    })
-    await Promise.all([abiAction, wasmAction])
-    // await Promise.all([wasmAction])
+
+    const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
+    if (result) console.log('ABI: https://bloks.io/transaction/' + result.transaction_id)
+    await sleep(5000)
+    const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
+    if (result2) console.log('WASM: https://bloks.io/transaction/' + result2.transaction_id)
+
 
   },
   async telos(type) {
