@@ -47,7 +47,6 @@ const methods = {
 
 }
 
-
 if (require.main == module) {
   if (Object.keys(methods).find(el => el === process.argv[2])) {
     console.log("Starting:", process.argv[2])

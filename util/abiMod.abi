@@ -333,6 +333,38 @@
           "type": "asset"
         }
       ]
+    },
+    {
+      "name": "staked",
+      "base": "",
+      "fields": [
+        {
+          "name": "template_id",
+          "type": "uint32"
+        },
+        {
+          "name": "asset_id",
+          "type": "uint64"
+        },
+        {
+          "name": "locked_until",
+          "type": "time_point_sec"
+        }
+      ]
+    },
+    {
+      "name": "unstake",
+      "base": "",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "name"
+        },
+        {
+          "name": "template_id",
+          "type": "uint32"
+        }
+      ]
     }
   ],
   "actions": [
@@ -395,6 +427,11 @@
       "name": "simdonation",
       "type": "simdonation",
       "ricardian_contract": ""
+    },
+    {
+      "name": "unstake",
+      "type": "unstake",
+      "ricardian_contract": ""
     }
   ],
   "tables": [
@@ -429,6 +466,13 @@
     {
       "name": "rounds",
       "type": "rounds",
+      "index_type": "i64",
+      "key_names": [],
+      "key_types": []
+    },
+    {
+      "name": "staked",
+      "type": "staked",
       "index_type": "i64",
       "key_names": [],
       "key_types": []

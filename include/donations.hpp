@@ -1,7 +1,7 @@
 #pragma once
 #define DEBUG
 #define DAY_SEC 86400
-#define _CONTRACT_NAME_ "donations"  //name of contract class
+#define _CONTRACT_NAME_ "donations"  // name of contract class
 #if __INTELLISENSE__
 #pragma diag_suppress 2486
 #endif
@@ -64,13 +64,13 @@ CONTRACT donations: public contract {
     uint32_t gold_template_id;
   };
 
-  //table definitions
+  // table definitions
   TABLE config {
     uint64_t round_length_sec = 7 * 24 * 60 * 60;
     eosio::time_point_sec start_time;
     // the minimum first donation to be included in the leaderboard. this to prevent RAM attacks.
     eosio::asset minimum_donation = eosio::asset(1000, eosio::symbol(eosio::symbol_code("EOS"), 4));
-    bool enabled = 0;  //disable leaderboard but still keep donations enabled
+    bool enabled = 0;  // disable leaderboard but still keep donations enabled
 
     float compound_decay_pct = 0.03;
     // uint32_t compound_step_sec = DAY_SEC;
@@ -95,10 +95,10 @@ CONTRACT donations: public contract {
     leaderboard_table;
 
   TABLE rounds {
-    uint64_t id;                 //round_id = leaderboard scope
-    eosio::asset total_donated;  //total amount donated in current round (not really needed in the contract)
-    uint64_t total_score;        //total accumulated score of donations
-    uint64_t donators;           //number of unique donators of current round
+    uint64_t id;                 // round_id = leaderboard scope
+    eosio::asset total_donated;  // total amount donated in current round (not really needed in the contract)
+    uint64_t total_score;        // total accumulated score of donations
+    uint64_t donators;           // number of unique donators of current round
     eosio::time_point_sec start;
     bool rewarded;
     uint64_t primary_key() const { return id; }
@@ -122,12 +122,22 @@ CONTRACT donations: public contract {
   };
   typedef eosio::multi_index<"balances"_n, balances> balances_table;
 
+  TABLE staked {  // scope is user account name
+    uint32_t template_id;
+    uint64_t asset_id;
+    eosio::time_point_sec locked_until;
+    uint64_t primary_key() const { return (uint64_t)template_id; }
+  };
+  typedef eosio::multi_index<"staked"_n, staked> staked_table;
+
   // functions
   void add_nfts(map<uint32_t, uint16_t> nft_deltas, donations::balances_table & balances_t);
   void sub_nfts(map<uint32_t, uint16_t> nft_deltas, donations::balances_table & balances_t);
   void nft_offer_swap(name receiver, map<uint32_t, uint16_t> nft_deltas, nft_config nft_conf);
   void mint(name receiver, uint32_t template_id, nft_config nft_conf);
   void burn(uint64_t asset_id);
+  void stake_nft(name owner, uint32_t template_id, uint64_t asset_id);
+
   // actions
   ACTION setconfig(const config& cfg);
   ACTION clrconfig();
@@ -136,6 +146,7 @@ CONTRACT donations: public contract {
   ACTION rewardlog(rounds & round_data, vector<rewards_data> & rewards_data);
   ACTION rmaccount(name & donator);
   ACTION claim(name & donator);
+  ACTION unstake(name & owner, uint32_t & template_id);
 
 #if defined(DEBUG)
   ACTION simdonation(name donator, asset donation);

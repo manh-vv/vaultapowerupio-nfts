@@ -36,7 +36,7 @@ const methods = {
     }
   },
   async setconfig(cfg) {
-    cfg = {
+    const eosConfig = {
       round_length_sec: 60 * 60 * 24 * 7,
       minimum_donation: "0.1000 EOS",
       enabled: 1,
@@ -60,7 +60,31 @@ const methods = {
         deposit_silver_for_gold: 40
       }
     }
-    await doAction('setconfig', { cfg })
+    const jungleConfig = {
+      round_length_sec: 60 * 60 * 24 * 7,
+      minimum_donation: "0.1000 EOS",
+      enabled: 1,
+      compound_decay_pct: 0.1,
+      decay_step_sec: 60 * 60 * 24,
+      start_decay_after_steps: 0,
+      start_time: "2022-01-27T09:30:00",
+      nft: {
+        mint_price_min: "1.1000 EOS",
+        mint_price_increase_by_rank: "0.1000 EOS",
+        mint_quantity_cap_per_rank: 40,
+        max_bronze_mint_per_round: 400,
+        bonus_silver_per_bronze_claimed: 40,
+        bonus_gold_per_silver_claimed: 30,
+        collection_name: 'eospwrupnfts',
+        schema_name: 'elemental',
+        bronze_template_id: 3648,
+        silver_template_id: 3649,
+        gold_template_id: 3650,
+        deposit_bronze_for_silver: 50,
+        deposit_silver_for_gold: 40
+      }
+    }
+    await doAction('setconfig', { cfg: jungleConfig })
   },
   async clrconfig() {
     await doAction('clrconfig')

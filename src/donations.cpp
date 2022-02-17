@@ -83,6 +83,18 @@ void donations::token_deposit(name from, name to, eosio::asset quantity, std::st
   lb.addScore(from, quantity);
 }
 
+void donations::stake_nft(name owner, uint32_t template_id, uint64_t asset_id) {
+  donations::staked_table staked_t(get_self(), owner.value);
+  staked_table::const_iterator staked_itr = staked_t.find((uint64_t)template_id);
+  check(staked_itr == staked_t.end(), "can't stake an already staked NFT template");
+  eosio::time_point_sec now = eosio::time_point_sec(eosio::current_time_point());
+  staked_t.emplace(get_self(), [&](staked& row) {
+    row.locked_until = time_point_sec(now.sec_since_epoch() + (86400 * 30 * 3));  // three month lockup
+    row.template_id = template_id;
+    row.asset_id = asset_id;
+  });
+}
+
 void donations::atomic_transfer(name collection_name,
                                 name from,
                                 name to,
@@ -99,9 +111,14 @@ void donations::atomic_transfer(name collection_name,
   donations::balances_table _balances2(get_self(), from.value);
   sub_nfts(template_counts, _balances2);
   if(to == get_self()) {
-    nft_offer_swap(from, template_counts, config.nft);
-    for(auto asset_id : asset_ids) {
-      burn(asset_id);
+    if(memo == string("stake")) {
+      check(asset_ids.size() == 1, "can only stake one NFT per transaction");
+      stake_nft(from, template_counts.begin()->first, asset_ids[0]);
+    } else {
+      nft_offer_swap(from, template_counts, config.nft);
+      for(auto asset_id : asset_ids) {
+        burn(asset_id);
+      }
     }
   }
 }
@@ -156,23 +173,3 @@ void donations::nft_offer_swap(name receiver, map<uint32_t, uint16_t> nft_deltas
   } else
     check(false, "can't deposit that NFT");
 }
-
-// void donations::logburnasset(
-//   name asset_owner,
-//   uint64_t asset_id,
-//   name collection_name,
-//   name schema_name,
-//   int32_t template_id,
-//   vector<asset> backed_tokens,
-//   atomicassets::ATTRIBUTE_MAP old_immutable_data,
-//   atomicassets::ATTRIBUTE_MAP old_mutable_data,
-//   name asset_ram_payer  //
-// ) {
-//   check(false, "test");
-//   const name tkn_contract = get_first_receiver();
-//   if(tkn_contract != name("atomicassets")) return;
-//   config_table _config(get_self(), get_self().value);
-//   const auto config = _config.get();
-//   if(collection_name != config.nft.collection_name) return;
-//   check(asset_owner == get_self(), "can't burn NFTs this way. Visit eospowerup.io/nft to burn NFTs and mint higher rarities.");
-// }

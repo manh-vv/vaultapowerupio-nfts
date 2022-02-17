@@ -45,13 +45,13 @@ const methods = {
     const abiAction = new Promise(async (res) => {
       console.log("Pushing ABI");
       const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
-      if (result) console.log('ABI: https://telos-test.bloks.io/transaction/' + result.transaction_id)
+      if (result) console.log('ABI: https://jungle3.bloks.io/transaction/' + result.transaction_id)
       res()
     })
     const wasmAction = new Promise(async (res) => {
       console.log("Pushing WASM");
       const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
-      if (result2) console.log('WASM: https://telos-test.bloks.io/transaction/' + result2.transaction_id)
+      if (result2) console.log('WASM: https://jungle3.bloks.io/transaction/' + result2.transaction_id)
       res()
     })
     await Promise.all([abiAction, wasmAction])

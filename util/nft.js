@@ -108,10 +108,10 @@ const methods = {
   async mint() {
     await doAction('mintasset', {
       authorized_minter: defaultParams.code,
-      collection_name: 'powerup.nfts',
-      schema_name: 'genesis',
-      template_id: '3644',
-      new_asset_owner: 'luckyhahnryu',
+      collection_name: defaultParams.code,
+      schema_name: 'elemental',
+      template_id: '126',
+      new_asset_owner: 'imjohnatboid',
       immutable_data: [],
       mutable_data: [],
       tokens_to_back: []

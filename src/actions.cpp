@@ -20,6 +20,17 @@ ACTION donations::clrconfig() {
   _config.remove();
 }
 
+ACTION donations::unstake(name& owner, uint32_t& template_id) {
+  check(has_auth(get_self()) || has_auth(owner), "not authorized");
+  Leaderboard lb(get_self());
+  staked_table staked_t(get_self(), owner.value);
+  staked_table::const_iterator staked_itr = staked_t.require_find((uint64_t)template_id, "owner does not have this template_id staked");
+  check(staked_itr->locked_until < lb.now, "can't unstake this NFT yet");
+  staked_t.erase(staked_itr);
+  auto data = make_tuple(get_self(), owner, vector<uint64_t> {staked_itr->asset_id}, string("unstake"));
+  action(active_auth, name("atomicassets"), name("transfer"), data).send();
+}
+
 ACTION donations::clrround(uint64_t& round_id) {
   require_auth(get_self());
   rounds_table _rounds(get_self(), get_self().value);
@@ -44,8 +55,9 @@ ACTION donations::rewardround(uint64_t& round_id) {
     row.rewarded = true;
   });
   auto conf = lb._conf.get();
-  if(conf.nft.mint_price_min.amount > 1e4) {
-    if(r_itr->total_donated.amount > 1e6) {
+  const auto difficulty_adjust = r_itr->total_donated.amount > 1e6;
+  if(conf.nft.mint_price_min.amount > 1e4 || difficulty_adjust) {
+    if(difficulty_adjust) {
       conf.nft.mint_price_min += asset(1e3, symbol("EOS", 4));
     } else {
       conf.nft.mint_price_min -= asset(1e3, symbol("EOS", 4));
