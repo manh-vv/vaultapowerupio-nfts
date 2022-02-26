@@ -1,10 +1,23 @@
 const conf = require('../eosioConfig')
 const env = require('../.env.js')
-const { api, tapos, doAction, getFullTable } = require('./lib/eosjs')(env.keys[env.defaultChain], conf.endpoints[env.defaultChain][0])
-const contractAccount = conf.accountName[env.defaultChain]
+const activeChain = process.env.CHAIN || env.defaultChain
+const { api, tapos, doAction, getFullTable } = require('./lib/eosjs')()
+const contractAccount = conf.accountName[activeChain]
 const contractActions = require('./do.js')
 
 const methods = {
+  async getStakes() {
+    const scopes = await api.rpc.get_table_by_scope({ code: contractAccount, table: 'staked', limit: 10000 })
+    console.log('more', scopes.more);
+    let stakes = []
+    for (let scope of scopes.rows) {
+      console.log(scope.scope);
+      const stake = await getFullTable({ code: contractAccount, scope: scope.scope, table: 'staked' })
+      stakes = stakes.concat(stake)
+      // console.log(stakes.length);
+    }
+    console.log('total Stakes:', stakes.length);
+  },
   async getRound() {
     const configTbl = await api.rpc.get_table_rows({ code: contractAccount, scope: contractAccount, table: "config" }).catch(err => console.error(err))
     const conf = configTbl.rows[0]

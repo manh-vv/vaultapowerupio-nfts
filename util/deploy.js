@@ -58,13 +58,13 @@ const methods = {
 
   },
   async eos(type) {
-    const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.eos, conf.endpoints.eos[1])
+    const { api, tapos, doAction } = require('./lib/eosjs')(env.keys.eos, conf.endpoints.eos[0])
 
     const authorization = [{ actor: conf.accountName.eos, permission: 'active' }]
 
     const result = await api.transact({ actions: [setAbiAction(`../build/${conf.contractName}.abi`, authorization)] }, tapos).catch(err => console.log(err))
     if (result) console.log('ABI: https://bloks.io/transaction/' + result.transaction_id)
-    await sleep(5000)
+    await sleep(2000)
     const result2 = await api.transact({ actions: [setCodeAction(`../build/${conf.contractName}.wasm`, authorization)] }, tapos).catch(err => console.log(err.toString()))
     if (result2) console.log('WASM: https://bloks.io/transaction/' + result2.transaction_id)
 

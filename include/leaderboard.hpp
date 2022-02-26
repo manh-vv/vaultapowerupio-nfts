@@ -81,7 +81,7 @@ struct Leaderboard {
     donations::rounds_table _rounds(_self, _self.value);
     auto r_itr = _rounds.find(round_id);
 
-    //leaderboard is scoped with round_id
+    // leaderboard is scoped with round_id
     donations::leaderboard_table _leaderboard(_self, round_id);
     auto lb_itr = _leaderboard.find(donator.value);
 
@@ -92,6 +92,8 @@ struct Leaderboard {
 
     round_exists ? modify_round(score, donation, _rounds, r_itr, has_donated) : emplace_round(score, donation, donator, _rounds);
     has_donated ? modify_leaderboard(score, donation, _leaderboard, lb_itr) : emplace_leaderboard(score, donation, donator, _leaderboard);
+    auto data = make_tuple(donator, donation, score, round_id);
+    action({_self, "active"_n}, _self, name("donatelog"), data).send();
   }
 
  private:
@@ -117,15 +119,15 @@ struct Leaderboard {
   }
 
   uint64_t convert_donation_to_score(eosio::asset& donation) {
-    //bonus calculation = pv * Math.pow((1-r), n)
+    // bonus calculation = pv * Math.pow((1-r), n)
     int pv = donation.amount;
     int sec_passed = now.sec_since_epoch() - get_round_start_time().sec_since_epoch();
-    int step = floor(sec_passed / lbconf.decay_step_sec);  //calculate in which compounding/decay step we are.
+    int step = floor(sec_passed / lbconf.decay_step_sec);  // calculate in which compounding/decay step we are.
 
     if(step > lbconf.start_decay_after_steps) {
       step -= lbconf.start_decay_after_steps;
     } else {
-      //no bonus decay so we stay at step 0
+      // no bonus decay so we stay at step 0
       step = 0;
     }
     double r = lbconf.compound_decay_pct;

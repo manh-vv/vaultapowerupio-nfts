@@ -74,7 +74,12 @@ void donations::atomic_logmint(uint64_t asset_id,
 }
 
 void donations::token_deposit(name from, name to, eosio::asset quantity, std::string memo) {
-  if(from == get_self() || from == name("eosio") || from == name("eosio.rex") || from == name("eosio.stake")) return;
+  if(from == get_self() ||
+     from == name("eosio") ||
+     from == name("eosio.rex") ||
+     from == name("eosio.stake") ||
+     from == name("atomicmarket") ||
+     from == name("eospowerupio")) return;
   if(to != get_self()) return;
   const name tkn_contract = get_first_receiver();
   if(tkn_contract != name("eosio.token")) return;

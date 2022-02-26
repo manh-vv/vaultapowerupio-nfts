@@ -109,8 +109,8 @@ const methods = {
     await doAction('mintasset', {
       authorized_minter: defaultParams.code,
       collection_name: defaultParams.code,
-      schema_name: 'elemental',
-      template_id: '126',
+      schema_name: 'elements',
+      template_id: '3650',
       new_asset_owner: 'imjohnatboid',
       immutable_data: [],
       mutable_data: [],

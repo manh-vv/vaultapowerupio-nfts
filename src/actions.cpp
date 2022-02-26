@@ -30,6 +30,9 @@ ACTION donations::unstake(name& owner, uint32_t& template_id) {
   auto data = make_tuple(get_self(), owner, vector<uint64_t> {staked_itr->asset_id}, string("unstake"));
   action(active_auth, name("atomicassets"), name("transfer"), data).send();
 }
+ACTION donations::donatelog(name& donator, asset& quantity, uint64_t& points, uint64_t& current_round) {
+  require_auth(get_self());
+}
 
 ACTION donations::clrround(uint64_t& round_id) {
   require_auth(get_self());

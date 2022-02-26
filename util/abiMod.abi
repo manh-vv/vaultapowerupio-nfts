@@ -137,6 +137,28 @@
       ]
     },
     {
+      "name": "donatelog",
+      "base": "",
+      "fields": [
+        {
+          "name": "donator",
+          "type": "name"
+        },
+        {
+          "name": "quantity",
+          "type": "asset"
+        },
+        {
+          "name": "points",
+          "type": "uint64"
+        },
+        {
+          "name": "current_round",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
       "name": "leaderboard",
       "base": "",
       "fields": [
@@ -401,6 +423,11 @@
     {
       "name": "clrrounds",
       "type": "clrrounds",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "donatelog",
+      "type": "donatelog",
       "ricardian_contract": ""
     },
     {

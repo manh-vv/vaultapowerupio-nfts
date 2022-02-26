@@ -23,13 +23,13 @@ const methods = {
     }
     await doAction('buyrambytes', data, 'eosio', contractAccount)
   },
-  async powerUp(account = contractAccount, cpu_frac = 1e9) {
+  async powerUp(account = contractAccount, cpu_frac = 4e8) {
     const data = {
       "payer": account,
       "receiver": account,
       "days": 1,
       cpu_frac,
-      "net_frac": 12076497,
+      "net_frac": 3e6,
       "max_payment": "0.1000 EOS"
     }
     await doAction('powerup', data, 'eosio', account)

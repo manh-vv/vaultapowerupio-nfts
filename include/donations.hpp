@@ -147,6 +147,7 @@ CONTRACT donations: public contract {
   ACTION rmaccount(name & donator);
   ACTION claim(name & donator);
   ACTION unstake(name & owner, uint32_t & template_id);
+  ACTION donatelog(name & donator, asset & quantity, uint64_t & points, uint64_t & current_round);
 
 #if defined(DEBUG)
   ACTION simdonation(name donator, asset donation);
