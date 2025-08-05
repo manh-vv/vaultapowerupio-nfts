@@ -51,7 +51,7 @@ const methods = {
         max_bronze_mint_per_round: 400,
         bonus_silver_per_bronze_claimed: 40,
         bonus_gold_per_silver_claimed: 30,
-        collection_name: 'powerup.nfts',
+        collection_name: 'vaultapwnfts',
         schema_name: 'elements',
         bronze_template_id: 3648,
         silver_template_id: 3649,

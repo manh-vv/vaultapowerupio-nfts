@@ -18,7 +18,7 @@ const methods = {
     let actions = []
     const data = {
       authorized_minter: account,
-      collection_name: 'powerup.nfts',
+      collection_name: 'vaultapwnfts',
       schema_name: 'elements',
       template_id: '3648',
       new_asset_owner: '.gems',
@@ -67,7 +67,7 @@ const methods = {
   async createCollection() {
     await doAction('createcol', {
       author: defaultParams.code,
-      collection_name: 'powerup.nfts',
+      collection_name: 'vaultapwnfts',
       allow_notify: true,
       authorized_accounts: [defaultParams.code],
       notify_accounts: [defaultParams.code],
@@ -77,7 +77,7 @@ const methods = {
   },
   async setCollectionData() {
     await doAction('setcoldata', {
-      collection_name: "powerup.nfts",
+      collection_name: "vaultapwnfts",
       data: [
         { key: "name", value: ["string", "EOS PowerUp NFTs"] },
         { key: "img", value: ["string", "QmbncqcDy6pdNH6J7qTtdkmYrhyQ9BfaUwE4bbUPXURpE8"] },
@@ -89,7 +89,7 @@ const methods = {
   async createSchema() {
     await doAction('createschema', {
       authorized_creator: defaultParams.code,
-      collection_name: 'powerup.nfts',
+      collection_name: 'vaultapwnfts',
       schema_name: 'elements',
       schema_format: meta.elements.schema
     }, 'atomicassets', defaultParams.code)
@@ -97,7 +97,7 @@ const methods = {
   async createTemplate() {
     await doAction('createtempl', {
       authorized_creator: defaultParams.code,
-      collection_name: 'powerup.nfts',
+      collection_name: 'vaultapwnfts',
       schema_name: "elements",
       transferable: true,
       burnable: true,
